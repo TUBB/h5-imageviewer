@@ -53,6 +53,8 @@ ReactDOM.render(
 )
 ```
 
+# Note
+Most code come from [AlloyFinger](https://github.com/AlloyTeam/AlloyFinger). I'm just an old porter.
 
 # License
 This content is released under the [MIT](http://opensource.org/licenses/MIT) License.
