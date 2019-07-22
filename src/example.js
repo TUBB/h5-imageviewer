@@ -20,7 +20,16 @@ class Example extends React.Component {
       e.stopPropagation()
       hideViwer()
     })
-    showViewer(img_cover, el)
+    showViewer(img_cover, {
+      restDoms: [el],
+      onFinish: (error) => {
+        if(error) {
+          console.error(error)
+        } else {
+          console.log('Image onload success')
+        }
+      }
+    })
   }
 
   render() {

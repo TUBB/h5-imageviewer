@@ -10,28 +10,41 @@ const VIEWER_SINGLE_IMAGE_ID = 'pobi_mobile_viewer_single_image_id'
 let containerDom = null
 let imgDom = null
 
-export const showViewer = (imgUrl, additionDom) => {
+export const showViewer = (imgUrl, options) => {
   if (!imgUrl) return
-  appendViewerContainer()
-  if (additionDom && additionDom.nodeType === 1) {
-    handleAddition(additionDom)
+  function noop() {}
+  let onFinish = noop
+  let restDoms = []
+  if(options) {
+    onFinish = options.onFinish || noop
+    restDoms = options.restDoms || []
   }
-  handleImg(imgUrl)
+  appendViewerContainer()
+  appendSingleViewer(imgUrl, onFinish)
+  if (restDoms && restDoms.length > 0) {
+    restDoms.forEach(additionDom => {
+      // Element
+      if(additionDom.nodeType === 1) {
+        handleAddition(additionDom)
+      } else {
+        console.warn('Ignore invalid dom', additionDom)
+      }
+    })
+  }
 }
 
+/**
+ * Hide image
+ */
 export const hideViwer = () => {
   removeViewerContainer()
-}
-
-const handleImg = imageUrl => {
-  appendSingleViewer(imageUrl)
 }
 
 const handleAddition = additionDom => {
   containerDom.appendChild(additionDom)
 }
 
-const appendSingleViewer = imageUrl => {
+const appendSingleViewer = (imageUrl, onFinish) => {
   imgDom = document.createElement('img')
   imgDom.setAttribute('id', VIEWER_SINGLE_IMAGE_ID)
   imgDom.setAttribute('src', imageUrl)
@@ -44,7 +57,7 @@ const appendSingleViewer = imageUrl => {
     containerDom.style.display = 'block';
     topPx = window.innerHeight/2 - (h*window.innerWidth/w)/2;
     imgDom.style.top = topPx + 'px';
-  })
+  }, onFinish)
 
   function ease(x) {
     return Math.sqrt(1 - Math.pow(x - 1, 2));
