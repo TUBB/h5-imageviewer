@@ -1,8 +1,8 @@
 # Preview
-You can touch this -> ![http://tubb.github.io/h5-imageviewer/example.html](http://tubb.github.io/h5-imageviewer/example.html)
+You can touch this -> [http://tubb.github.io/h5-imageviewer/example.html](http://tubb.github.io/h5-imageviewer/example.html)
 
-Or scan QR code
-![PREVIEW](https://github.com/TUBB/h5-imageviewer/blob/master/art/viewer_qr.png)
+# Demo
+![QRCODE](https://github.com/TUBB/h5-imageviewer/blob/master/art/viewer_qr.png)
 
 # Install
 
