@@ -1,6 +1,6 @@
 {
   "name": "h5-imageviewer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "h5 imageviewer for mobile platform.",
   "main": "dist/bundle.js",
   "files": [
@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "build": "webpack --config webpack.pro.js",
+    "preview": "webpack --config webpack.preview.js",
     "watch": "webpack --watch",
     "dev": "webpack-dev-server --config webpack.dev.js --disableHostCheck=true"
   },
