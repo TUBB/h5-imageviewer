@@ -5,11 +5,12 @@ export default function imageLoaded(imgDom, onload, onFinish) {
         onload.call(imgDom, this.width, this.height);
         img.onload = null;
         img=null;
-        onFinish()
+        onFinish && onFinish()
     };
     const src = imgDom.getAttribute("src")
     img.onerror = function() {
-        onFinish(new Error(`Load image src [${src}] onerror`))
+        onFinish && onFinish(new Error(`Load image src [${src}] onerror`))
+        img.onerror = null
     }
     img.src = src;
 }

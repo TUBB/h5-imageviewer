@@ -3,7 +3,6 @@ html, body, #root {
   height: 100%;
 }
 .example {
-  display: -webkit-flex; /* Safari */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -26,4 +25,25 @@ html, body, #root {
   top: 1em;
   width: 1.5em;
   height: 1.5em;
+}
+
+.indicator {
+  position: absolute;
+  bottom: 0;
+  margin-bottom: 2em;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  .dot {
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: white;
+    margin-right: 1em;
+  }
+  .dotSel {
+    background: green;
+  }
 }

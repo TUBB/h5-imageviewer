@@ -1,15 +1,59 @@
 #pobi_mobile_viewer_container_id {
-  display: none;
+  display: block;
   position:fixed;
   width: 100%;
   height: 100%;
   left:0;
   top:0;
-  background:black;
+  background: rgba(0, 0, 0, 0.9);
   z-index: 999;
+}
+
+#pobi_mobile_viewer_panel_id {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  .pobi_mobile_viewer_single_image_container {
+    display: none;
+    position: relative;
+    flex-shrink: 0;
+    text-align: center;
+    img {
+      height: auto;
+    }
+  }
 }
 
 #pobi_mobile_viewer_single_image_id {
   width: 100%;
   position: absolute;
+}
+
+.pobi_mobile_viewer_loading {
+  display: inline-block;
+  width: 4em;
+  height: 4em;
+}
+.pobi_mobile_viewer_loading:after {
+  content: " ";
+  display: block;
+  width: 3em;
+  height: 3em;
+  margin: 1px;
+  border-radius: 50%;
+  border: 0.3em solid #fff;
+  border-color: #fff transparent #fff transparent;
+  animation: pobi_mobile_viewer_loading 1.2s linear infinite;
+}
+@keyframes pobi_mobile_viewer_loading {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
