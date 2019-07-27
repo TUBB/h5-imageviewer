@@ -11,11 +11,11 @@ import altImg from '../assets/img_loading_error.png'
 class Example extends React.Component {
 
   onShowImgsClick() {
-    viewer.showImgListViewer([img_uof, img_cover, img_timg, img_uof, img_cover, img_timg, img_uof, img_cover, img_timg], { 
+    viewer.showImgListViewer([img_uof, img_cover, 9, img_uof, img_cover, img_timg, img_uof, img_cover, img_timg], { 
       onPageChanged: pageIndex => {
         console.log('onPageChanged', pageIndex)
       },
-      altImg: altImg 
+      altImg 
     })
   } 
 
@@ -34,7 +34,6 @@ class Example extends React.Component {
       indicator.appendChild(dot)
       dotDoms.push(dot)
     })
-
     el.addEventListener('click', e => {
       e.stopPropagation()
       viewer.hideImgListViwer()
@@ -55,9 +54,9 @@ class Example extends React.Component {
   }
 
   onShowClick() {
-    viewer.showViewer(img_cover, {
+    viewer.showViewer(11, {
       // alt img
-      altImg: altImg
+      altImg
     })
   }
 
@@ -69,7 +68,7 @@ class Example extends React.Component {
       e.stopPropagation()
       viewer.hideViwer()
     })
-    viewer.showViewer(img_cover, {
+    viewer.showViewer(img_uof, {
       restDoms: [el],
       onFinish: (error) => {
         if(error) {

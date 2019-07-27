@@ -18,7 +18,6 @@
   height: 100%;
   background: transparent;
   .pobi_mobile_viewer_single_image_container {
-    display: none;
     position: relative;
     flex-shrink: 0;
     text-align: center;
@@ -31,12 +30,23 @@
 #pobi_mobile_viewer_single_image_id {
   width: 100%;
   position: absolute;
+  left:0; 
+  right:0; 
+  top:0; 
+  bottom:0;
+  margin:auto;
 }
 
 .pobi_mobile_viewer_loading {
   display: inline-block;
   width: 4em;
   height: 4em;
+  position: absolute;
+  left:0; 
+  right:0; 
+  top:0; 
+  bottom:0;
+  margin:auto;
 }
 .pobi_mobile_viewer_loading:after {
   content: " ";

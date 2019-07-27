@@ -19,8 +19,7 @@ let pageCount = 0
 let currPage = 0
 const SCROLL_THRESHOLD = 0.1
 const DAMPING_FACTOR = 0.9
-const IMG_SCROLL_FACTOR = 1.5
-const MIN_FINGER_SHAKE = 2
+const IMG_SCROLL_FACTOR = 2
 let orientation = orit.PORTRAIT
 let viewerData = null
 let alloyFingerList = []
@@ -109,7 +108,7 @@ const scrollToPage = (dom, targetPage, prevPage, onPageChanged) => {
   panelToX(targetPage)
 }
 
-const appendSingleViewer = (imageUrl, index, onPageChanged, altImg) => {
+const appendSingleViewer = (imgUrl, index, onPageChanged, altImg) => {
   const imgContainerDom = document.createElement('div')
   imgContainerDom.setAttribute('class', VIEWER_SINGLE_IMAGE_CONTAINER)
   imgContainerDom.style.width = window.innerWidth + 'px'
@@ -121,14 +120,14 @@ const appendSingleViewer = (imageUrl, index, onPageChanged, altImg) => {
 
   const imgDom = document.createElement('img')
   imgDom.setAttribute('id', genImgId(index))
-  imgDom.setAttribute('src', imageUrl)
+  imgDom.setAttribute('src', IMG_EMPTY)
+  imgDom.style.width = window.innerWidth+'px'
+  imgDom.style.height = window.innerWidth+'px'
   imgContainerDom.appendChild(imgDom)
 
   imgDom.addEventListener('click', imgClickListener)
 
-  let topPx = 0
-  imageLoaded(imgDom, (w, h) => {
-    imgContainerDom.style.display = 'block';
+  const resetImgDom = (w, h) => {
     let imgWidth = 0
     if(w > window.innerWidth) {
       imgWidth = window.innerWidth
@@ -136,45 +135,70 @@ const appendSingleViewer = (imageUrl, index, onPageChanged, altImg) => {
       imgWidth = w
     }
     imgDom.style.width = imgWidth + 'px'
-    topPx = window.innerHeight/2 - (h*window.innerWidth/imgWidth)/2;
+    imgDom.style.height = 'auto'
+  }
+  imageLoaded(imgUrl, (w, h) => {
+    imgDom.src = imgUrl
+    resetImgDom(w, h)
   }, error => {
-    imgContainerDom.removeChild(loadingDom)
     if(error) {
-      imgContainerDom.style.display = 'block';
       if(altImg) {
-        imgDom.src = altImg
+        imageLoaded(altImg, (w, h) => {
+          imgDom.src = altImg
+          resetImgDom(w, h)
+        }, error => {
+          imgContainerDom.removeChild(loadingDom)
+        })
       } else {
-        imgDom.src = IMG_EMPTY
-        imgDom.style.width = window.innerWidth+'px'
-        imgDom.style.height = window.innerWidth+'px'
+        imgContainerDom.removeChild(loadingDom)
       }
+    } else {
+      imgContainerDom.removeChild(loadingDom)
     }
   })
   const alloyFinger = imgAlloyFinger(imgDom, {
-    topPx,
     pressMoveListener: evt => {
+      const currPageTranslateStart = currPage * window.innerWidth
       const { scaleX, width, translateX } = imgDom
       const { deltaX, deltaY } = evt
-      const panelDeltaX = DAMPING_FACTOR * deltaX
+      const panelTranslateX = DAMPING_FACTOR * deltaX + panelDom.translateX
       const realWidth = scaleX * width
       const scaledWidth = Math.abs(realWidth - width) / 2
-      const currTranslateX = translateX + deltaX * IMG_SCROLL_FACTOR
+      const imgTranslateX = translateX + deltaX * IMG_SCROLL_FACTOR
       if(Math.abs(deltaX) > Math.abs(deltaY)) {
         if(realWidth <= width) { // img shrinked
-          if(Math.abs(panelDeltaX) > MIN_FINGER_SHAKE) {
-            panelDom.translateX += panelDeltaX 
-          }
+          panelDom.translateX = panelTranslateX 
         } else { // img enlarged
-          if(Math.abs(currTranslateX) - scaledWidth <= 0) {
-            imgDom.translateX += deltaX * IMG_SCROLL_FACTOR
-          } else {
-            if(Math.abs(panelDeltaX) > MIN_FINGER_SHAKE) {
-              panelDom.translateX += panelDeltaX
+          if(Math.abs(imgTranslateX) - scaledWidth <= 0) {
+            if(deltaX > 0) { // move to right
+              if(Math.abs(panelDom.translateX) > currPageTranslateStart) {
+                const panelReturnDis = panelTranslateX
+                if(Math.abs(panelReturnDis) <  currPageTranslateStart) {
+                  panelDom.translateX = -currPageTranslateStart
+                } else {
+                  panelDom.translateX = panelReturnDis
+                }
+              } else {
+                imgDom.translateX = imgTranslateX
+              }
+            } else { // move to left
+              if(Math.abs(panelDom.translateX) < currPageTranslateStart) {
+                const panelReturnDis = panelTranslateX
+                if(Math.abs(panelReturnDis) >  currPageTranslateStart) {
+                  panelDom.translateX = -currPageTranslateStart
+                } else {
+                  panelDom.translateX = panelReturnDis
+                }
+              } else {
+                imgDom.translateX = imgTranslateX
+              }
             }
+          } else {
+            panelDom.translateX = panelTranslateX
           }
         }
       } else {
-        imgDom.translateY += deltaY;
+        imgDom.translateY += deltaY * IMG_SCROLL_FACTOR
       }
     },
     touchEndListener: evt => {

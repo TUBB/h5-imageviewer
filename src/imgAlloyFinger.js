@@ -38,10 +38,14 @@ const imgAlloyFinger = (el, options = {}) => {
         if (el.scaleX < MIN_SCALE) {
           new To(el, "scaleX", MIN_SCALE, 500, ease);
           new To(el, "scaleY", MIN_SCALE, 500, ease);
+          new To(el, "translateX", 0, 500, ease);
+          new To(el, "translateY", 0, 500, ease);
         }
         if (el.scaleX > MAX_SCALE) {
           new To(el, "scaleX", MAX_SCALE, 500, ease);
           new To(el, "scaleY", MAX_SCALE, 500, ease);
+          new To(el, "translateX", 0, 500, ease);
+          new To(el, "translateY", 0, 500, ease);
         }
         if(rotationAble) {
           let rotation = el.rotateZ % 360;

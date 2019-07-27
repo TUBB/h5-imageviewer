@@ -1,6 +1,6 @@
 {
   "name": "h5-imageviewer",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "h5 imageviewer for mobile platform.",
   "main": "dist/bundle.js",
   "files": [

@@ -3,7 +3,6 @@ import imageLoaded from './utils/image_loaded'
 import imgAlloyFinger from './imgAlloyFinger'
 import orit from './utils/orientation'
 import scrollThrough from './utils/scrollThrough'
-import IMG_EMPTY from './utils/altImg'
 
 const VIEWER_CONTAINER_ID = 'pobi_mobile_viewer_container_id'
 const VIEWER_SINGLE_IMAGE_ID = 'pobi_mobile_viewer_single_image_id'
@@ -67,58 +66,52 @@ const handleAddition = additionDom => {
   containerDom.appendChild(additionDom)
 }
 
-const appendSingleViewer = (imageUrl, onFinish, altImg) => {
+const appendSingleViewer = (imgUrl, onFinish, altImg) => {
   const loadingDom = document.createElement('div')
   loadingDom.setAttribute('class', 'pobi_mobile_viewer_loading')
   containerDom.appendChild(loadingDom)
-  loadingDom.style.top = (window.innerHeight/2 - loadingDom.offsetHeight/2)+'px'
-  loadingDom.style.left = (window.innerWidth/2 - loadingDom.offsetWidth/2)+'px'
-  loadingDom.style.position = 'absolute'
 
   imgDom = document.createElement('img')
   imgDom.setAttribute('id', VIEWER_SINGLE_IMAGE_ID)
-  imgDom.setAttribute('src', imageUrl)
+  imgDom.setAttribute('src', imgUrl)
   containerDom.appendChild(imgDom)
 
   imgDom.addEventListener('click', imgClickListener)
-
-  let topPx = 0
-  imageLoaded(imgDom, (w, h) => {
-    topPx = window.innerHeight/2 - (h*window.innerWidth/w)/2;
-    imgDom.style.top = topPx + 'px';
+  const resetImgDom = (w, h) => {
+    let imgWidth = 0
+    if(w > window.innerWidth) {
+      imgWidth = window.innerWidth
+    } else {
+      imgWidth = w
+    }
+    imgDom.style.width = imgWidth + 'px'
+    imgDom.style.height = 'auto'
+  }
+  imageLoaded(imgUrl, (w, h) => {
+    resetImgDom(w, h)
   }, error => {
     onFinish(error)
-    containerDom.removeChild(loadingDom)
     if(error) {
+      containerDom.removeChild(imgDom)
       if(altImg) {
-        const src = altImg
-        let img = new Image();
-        img.onload = function() {
-            topPx = window.innerHeight/2 - (this.height*window.innerWidth/this.width)/2;
-            imgDom.style.top = topPx + 'px';
-            img.onload = null;
-            img = null;
-        }
-        img.onerror = function() {
-          containerDom.removeChild(imgDom)
-          img.onerror = null
-        }
-        img.src = src
-        imgDom.src = src
+        imageLoaded(altImg, (w, h) => {
+          containerDom.appendChild(imgDom)
+          imgDom.src = altImg
+          resetImgDom(w, h)
+        }, error => {
+          containerDom.removeChild(loadingDom)
+        })
       } else {
-        imgDom.src = IMG_EMPTY
-        const top = window.innerHeight/2 - (window.innerWidth*window.innerWidth/window.innerWidth)/2;
-        imgDom.style.top = top + 'px';
-        imgDom.style.width = window.innerWidth+'px'
-        imgDom.style.height = window.innerWidth+'px'
+        containerDom.removeChild(loadingDom)
       }
+    } else {
+      containerDom.removeChild(loadingDom)
     }
   })
   alloyFinger = imgAlloyFinger(imgDom, {
-    topPx,
     pressMoveListener: evt => {
-      imgDom.translateX += evt.deltaX;
-      imgDom.translateY += evt.deltaY;
+      imgDom.translateX += evt.deltaX * 1.5;
+      imgDom.translateY += evt.deltaY * 1.5;
     },
     singleTapListener: () => {
       hideViwer()
