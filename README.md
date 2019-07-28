@@ -1,7 +1,7 @@
-# 5H image viewer
+# H5 image viewer
 H5 image viewer for mobile platform, support all web frameworks.
 
-# Feature
+# Features
 * Rotate、pinch、move and double tap the image.
 * Page turning.
 * Support landscape and portrait screen.
