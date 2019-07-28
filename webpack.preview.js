@@ -5,12 +5,11 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
 module.exports = {
   mode: 'production',
-  // 多页面入口配置
   entry: './src/example/example.js',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, 'preview'),
     // chunk hash, 不同chunk会生成不同的hash
-    filename: 'bundle.js',
+    filename: '[name]_[hash:8].js',
   },
   module: {
     rules: [
@@ -81,7 +80,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src/preview/example.html'),
       filename: 'example.html',
-      chunks: ['example'],
       inject: true,
       minify: {
           html5: true,

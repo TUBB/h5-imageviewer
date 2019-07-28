@@ -1,15 +1,15 @@
 const path = require('path')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const {CleanWebpackPlugin} = require('clean-webpack-plugin')
+const nodeExternals = require('webpack-node-externals');
 
 module.exports = {
   mode: 'production',
-  // 多页面入口配置
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    // chunk hash, 不同chunk会生成不同的hash
     filename: 'bundle.js',
+    libraryTarget: 'commonjs2'
   },
   module: {
     rules: [
@@ -70,6 +70,7 @@ module.exports = {
       }
     ]
   },
+  externals: [nodeExternals()],
   plugins: [
     new CleanWebpackPlugin(),
     // css代码压缩

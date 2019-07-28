@@ -2,6 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './example.less'
 import viewer from '../index';
+// import viewer from 'h5-imageviewer'
 import img_cover from '../assets/cover.jpg'
 import img_close from '../assets/close.png'
 import img_timg from '../assets/timg.jpg'

@@ -110,8 +110,8 @@ const appendSingleViewer = (imgUrl, onFinish, altImg) => {
   })
   alloyFinger = imgAlloyFinger(imgDom, {
     pressMoveListener: evt => {
-      imgDom.translateX += evt.deltaX * 1.5;
-      imgDom.translateY += evt.deltaY * 1.5;
+      imgDom.translateX += evt.deltaX * 1.2;
+      imgDom.translateY += evt.deltaY * 1.2;
     },
     singleTapListener: () => {
       hideViwer()

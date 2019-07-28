@@ -18,7 +18,7 @@ const imgAlloyFinger = (el, options = {}) => {
     let initScale = 1;
     // for trusted singleTab
     let disableSingleTab = false
-    return new AlloyFinger(el, {
+    const alloyFinger = new AlloyFinger(el, {
       multipointStart: function () {
         To.stopAll();
         initScale = el.scaleX;
@@ -68,6 +68,7 @@ const imgAlloyFinger = (el, options = {}) => {
         disableSingleTab = true
         pressMoveListener(evt)
         evt.preventDefault()
+        evt.stopPropagation()
       },
       doubleTap: function (evt) {
         disableSingleTab = true
@@ -89,6 +90,8 @@ const imgAlloyFinger = (el, options = {}) => {
       },
       touchEnd: function(evt) {
         touchEndListener(evt)
+        evt.preventDefault()
+        evt.stopPropagation()
         // singleTab delay 250, so we delay more. true ended for me!!!!
         setTimeout(() => {
           disableSingleTab = false
@@ -99,7 +102,11 @@ const imgAlloyFinger = (el, options = {}) => {
           singleTapListener()
         }
       }
-    });
+    })
+    alloyFinger.pressMoveListener = pressMoveListener
+    alloyFinger.touchEndListener = touchEndListener
+    alloyFinger.MIN_SCALE = MIN_SCALE
+    return alloyFinger
 }
 
 export default imgAlloyFinger

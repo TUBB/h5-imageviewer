@@ -77,7 +77,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'src/example/example.html'),
       filename: 'example.html',
-      chunks: ['example'],
       inject: true,
       minify: {
           html5: true,

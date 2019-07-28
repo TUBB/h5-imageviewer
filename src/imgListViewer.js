@@ -1,4 +1,5 @@
 import './main.less'
+import AlloyFinger from 'alloyfinger'
 import imageLoaded from './utils/image_loaded'
 import Transform from './utils/transform'
 import To from './utils/to'
@@ -18,11 +19,12 @@ let panelDom = null
 let pageCount = 0
 let currPage = 0
 const SCROLL_THRESHOLD = 0.1
-const DAMPING_FACTOR = 0.9
+const DAMPING_FACTOR = 0.95
 const IMG_SCROLL_FACTOR = 2
 let orientation = orit.PORTRAIT
 let viewerData = null
 let alloyFingerList = []
+let pannelAlloyFinger = null
 
 export const showImgListViewer = (imageList=[], options) => {
   if (!Array.isArray(imageList) || imageList.length <= 0) return
@@ -36,7 +38,6 @@ export const showImgListViewer = (imageList=[], options) => {
   pageCount = imageList.length
   appendViewerContainer() 
   appendViewerPanel()
-  Transform(panelDom)
   options = options || {}
   imageList.forEach((imgUrl, index) => {
     appendSingleViewer(imgUrl, index, options.onPageChanged, options.altImg)
@@ -157,7 +158,7 @@ const appendSingleViewer = (imgUrl, index, onPageChanged, altImg) => {
     }
   })
   const alloyFinger = imgAlloyFinger(imgDom, {
-    pressMoveListener: evt => {
+    pressMoveListener: (evt) => {
       const currPageTranslateStart = currPage * window.innerWidth
       const { scaleX, width, translateX } = imgDom
       const { deltaX, deltaY } = evt
@@ -201,7 +202,7 @@ const appendSingleViewer = (imgUrl, index, onPageChanged, altImg) => {
         imgDom.translateY += deltaY * IMG_SCROLL_FACTOR
       }
     },
-    touchEndListener: evt => {
+    touchEndListener: () => {
       const { translateX } = panelDom
       const scrollFactor = Math.abs(translateX) / window.innerWidth
       const page = Math.floor(scrollFactor)
@@ -225,6 +226,7 @@ const appendSingleViewer = (imgUrl, index, onPageChanged, altImg) => {
     },
     rotationAble: false
   })
+  alloyFinger.imgDom = imgDom
   alloyFingerList.push(alloyFinger)
 }
 
@@ -247,7 +249,72 @@ const appendViewerPanel = () => {
   if (!panelDom) {
     panelDom = document.createElement('div')
     panelDom.setAttribute('id', VIEWER_PANEL_ID)
+    panelDom.style.width = (window.innerWidth*pageCount) + 'px'
+    panelDom.style.height = window.innerHeight + 'px'
     containerDom.appendChild(panelDom)
+    Transform(panelDom)
+    const proxyFinger = () => {
+      const imgAF = alloyFingerList[currPage]
+      if(imgAF && imgAF.imgDom.scaleX === imgAF.MIN_SCALE
+        && imgAF.imgDom.translateX === 0) {
+        return imgAF
+      } else {
+        return null
+      }
+    }
+    let disableSingleTab = false
+    pannelAlloyFinger = new AlloyFinger(panelDom, {
+      pressMove: function(evt) {
+        const imgAF = proxyFinger()
+        if(imgAF) {
+          disableSingleTab = true
+          imgAF && imgAF.pressMoveListener(evt)
+          evt.preventDefault()
+        }
+      },
+      touchEnd: function(evt) {
+        const imgAF = proxyFinger()
+        if(imgAF) {
+          imgAF && imgAF.touchEndListener(evt)
+          evt.preventDefault()
+          setTimeout(() => {
+            disableSingleTab = false
+          }, 300)
+        }
+        
+      },
+      pinch: function() {
+        const imgAF = proxyFinger()
+        if(imgAF) {
+          disableSingleTab = true
+        }
+      },
+      rotate: function() {
+        const imgAF = proxyFinger()
+        if(imgAF) {
+          disableSingleTab = true
+        }
+      },
+      doubleTap: function() {
+        const imgAF = proxyFinger()
+        if(imgAF) {
+          disableSingleTab = true
+          To.stopAll();
+        }
+      },
+      singleTap: function() {
+        const imgAF = proxyFinger()
+        if(imgAF && !disableSingleTab) {
+          hideImgListViwer()
+        }
+      },
+      multipointEnd: function () {
+        To.stopAll()
+      },
+      multipointStart: function () {
+        To.stopAll()
+      },
+    })
   }
 }
 
@@ -271,6 +338,11 @@ const removeViewerContainer = () => {
   orientation = orit.PORTRAIT
   alloyFingerList.forEach(alloyFinger => {
     alloyFinger.destroy()
+    alloyFinger.pressMoveListener = null
+    alloyFinger.touchEndListener = null
+    alloyFinger = null
   })
   alloyFingerList = []
+  pannelAlloyFinger && pannelAlloyFinger.destroy()
+  pannelAlloyFinger = null
 }

@@ -1,6 +1,6 @@
 {
   "name": "h5-imageviewer",
-  "version": "0.2.2",
+  "version": "0.2.6",
   "description": "h5 imageviewer for mobile platform.",
   "main": "dist/bundle.js",
   "files": [
@@ -39,7 +39,8 @@
     "url-loader": "^2.0.0",
     "webpack": "^4.35.0",
     "webpack-cli": "^3.3.6",
-    "webpack-dev-server": "^3.7.2"
+    "webpack-dev-server": "^3.7.2",
+    "webpack-node-externals": "^1.7.2"
   },
   "repository": {
     "type": "git",
