@@ -13,7 +13,7 @@ npm install h5-imageviewer
 ```
 
 # Usage
-Please check [EXAMPLE](https://github.com/TUBB/h5-imageviewer/blob/master/src/example.js) for detail.
+Please check [EXAMPLE](https://github.com/TUBB/h5-imageviewer/blob/master/src/example/example.js) for detail.
 
 # Dependencies
 * [AlloyFinger](https://github.com/AlloyTeam/AlloyFinger)

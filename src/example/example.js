@@ -54,7 +54,7 @@ class Example extends React.Component {
   }
 
   onShowClick() {
-    viewer.showViewer(11, {
+    viewer.showViewer(img_cover, {
       // alt img
       altImg
     })
