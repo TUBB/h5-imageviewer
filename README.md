@@ -6,6 +6,7 @@ H5 image viewer for mobile platform, support all web frameworks.
 * Page turning.
 * Support landscape and portrait screen.
 * Support all web frameworks.
+* Scroll through long figure.
 
 # Demo
 ![QRCODE](https://i.loli.net/2019/07/28/5d3cfc6643ec611808.png)
@@ -22,7 +23,7 @@ npm install h5-imageviewer
 ```js
 import viewer from 'h5-imageviewer'
 // viewer.showViewer() // show single image viewer
-// iewer.hideViwer()
+// viewer.hideViwer()
 // viewer.showImgListViewer() // show image list viewer
 // viewer.hideImgListViwer()
 ```
