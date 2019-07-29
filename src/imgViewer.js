@@ -15,7 +15,7 @@ let alloyFinger = null
 
 export const showViewer = (imgUrl, options) => {
   if (!imgUrl) return
-  hideViwer()
+  hideViwer(false)
   scrollThrough(true)
   orientation = orit.phoneOrientation()
   orit.removeOrientationChangeListener(userOrientationListener)
@@ -57,7 +57,13 @@ const userOrientationListener = () => {
 /**
  * Hide image
  */
-export const hideViwer = () => {
+export const hideViwer = (notifyUser = true) => {
+  if(notifyUser 
+    && viewerData 
+    && viewerData.options 
+    && viewerData.options.onViewerHideListener) {
+    viewerData.options.onViewerHideListener()
+  }
   scrollThrough(false)
   removeViewerContainer()
 }
