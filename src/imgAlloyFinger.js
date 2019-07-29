@@ -28,10 +28,14 @@ const imgAlloyFinger = (el, options = {}) => {
         if(rotationAble) {
           el.rotateZ += evt.angle;
         }
+        evt.preventDefault()
+        evt.stopPropagation()
       },
       pinch: function (evt) {
         disableSingleTab = true
         el.scaleX = el.scaleY = initScale * evt.zoom;
+        evt.preventDefault()
+        evt.stopPropagation()
       },
       multipointEnd: function () {
         To.stopAll();

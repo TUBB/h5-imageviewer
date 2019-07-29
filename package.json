@@ -1,6 +1,6 @@
 {
   "name": "h5-imageviewer",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "h5 imageviewer for mobile platform, support all web frameworks",
   "main": "dist/bundle.js",
   "files": [
@@ -10,7 +10,8 @@
     "build": "webpack --config webpack.pro.js",
     "preview": "webpack --config webpack.preview.js",
     "watch": "webpack --watch",
-    "dev": "webpack-dev-server --config webpack.dev.js --disableHostCheck=true"
+    "dev": "webpack-dev-server --config webpack.dev.js --disableHostCheck=true",
+    "appdev": "webpack-dev-server --config webpack.dev.app.js --disableHostCheck=true"
   },
   "dependencies": {
     "alloyfinger": "^0.1.16"

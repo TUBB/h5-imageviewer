@@ -5,3 +5,5 @@ preview/
 .DS_Store
 npm-debug.log
 .idea/
+webpack.dev.app.js
+src/apptest/
