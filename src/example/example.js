@@ -40,7 +40,7 @@ class Example extends React.Component {
     })
     el.addEventListener('click', e => {
       e.stopPropagation()
-      viewer.hideImgListViwer()
+      viewer.hideImgListViewer()
     })
     viewer.showImgListViewer([img_cover, img_uof, img_timg], {
       defaultPageIndex: 1,
@@ -73,7 +73,7 @@ class Example extends React.Component {
     el.className = 'btnClose'
     el.addEventListener('click', e => {
       e.stopPropagation()
-      viewer.hideViwer()
+      viewer.hideViewer()
     })
     viewer.showViewer(img_uof, {
       restDoms: [el],

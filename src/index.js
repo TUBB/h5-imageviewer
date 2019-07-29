@@ -1,9 +1,9 @@
-import { showViewer, hideViwer } from './imgViewer'
-import { showImgListViewer, hideImgListViwer } from './imgListViewer'
+import { showViewer, hideViewer } from './imgViewer'
+import { showImgListViewer, hideImgListViewer } from './imgListViewer'
 
 const viewer = {
-  showViewer, hideViwer,
-  showImgListViewer, hideImgListViwer
+  showViewer, hideViewer,
+  showImgListViewer, hideImgListViewer
 }
 
 export default viewer
