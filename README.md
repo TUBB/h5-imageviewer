@@ -23,9 +23,9 @@ npm install h5-imageviewer
 ```js
 import viewer from 'h5-imageviewer'
 // viewer.showViewer() // show single image viewer
-// viewer.hideViwer()
+// viewer.hideViewer()
 // viewer.showImgListViewer() // show image list viewer
-// viewer.hideImgListViwer()
+// viewer.hideImgListViewer()
 ```
 Please check [EXAMPLE](https://github.com/TUBB/h5-imageviewer/blob/master/src/example/example.js) for detail.
 

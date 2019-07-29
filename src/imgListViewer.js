@@ -20,7 +20,7 @@ let pageCount = 0
 let currPage = 0
 const SCROLL_THRESHOLD = 0.1
 const DAMPING_FACTOR = 0.95
-const IMG_SCROLL_FACTOR = 2
+const IMG_SCROLL_FACTOR = 1.5
 let orientation = orit.PORTRAIT
 let viewerData = null
 let alloyFingerList = []
@@ -28,7 +28,7 @@ let pannelAlloyFinger = null
 
 export const showImgListViewer = (imageList=[], options) => {
   if (!Array.isArray(imageList) || imageList.length <= 0) return
-  hideImgListViwer(false)
+  hideImgListViewer(false)
   scrollThrough(true)
   orientation = orit.phoneOrientation()
   orit.removeOrientationChangeListener(userOrientationListener)
@@ -59,7 +59,7 @@ const userOrientationListener = () => {
 /**
  * Hide image
  */
-export const hideImgListViwer = (notifyUser = true) => {
+export const hideImgListViewer = (notifyUser = true) => {
   if(notifyUser 
     && viewerData 
     && viewerData.options 
@@ -228,7 +228,7 @@ const appendSingleViewer = (imgUrl, index, onPageChanged, altImg) => {
       scrollToPage(imgDom, currPage, fixedCurrPage, onPageChanged)
     },
     singleTapListener: () => {
-      hideImgListViwer()
+      hideImgListViewer()
     },
     rotationAble: false
   })
@@ -311,7 +311,7 @@ const appendViewerPanel = () => {
       singleTap: function() {
         const imgAF = proxyFinger()
         if(imgAF && !disableSingleTab) {
-          hideImgListViwer()
+          hideImgListViewer()
         }
       },
       multipointEnd: function () {
@@ -330,7 +330,7 @@ const imgClickListener = e => {
 
 const viewerContainerClickListener = e => {
   e.stopPropagation()
-  hideImgListViwer()
+  hideImgListViewer()
 }
 
 const removeViewerContainer = () => {

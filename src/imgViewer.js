@@ -15,7 +15,7 @@ let alloyFinger = null
 
 export const showViewer = (imgUrl, options) => {
   if (!imgUrl) return
-  hideViwer(false)
+  hideViewer(false)
   scrollThrough(true)
   orientation = orit.phoneOrientation()
   orit.removeOrientationChangeListener(userOrientationListener)
@@ -57,7 +57,7 @@ const userOrientationListener = () => {
 /**
  * Hide image
  */
-export const hideViwer = (notifyUser = true) => {
+export const hideViewer = (notifyUser = true) => {
   if(notifyUser 
     && viewerData 
     && viewerData.options 
@@ -120,7 +120,7 @@ const appendSingleViewer = (imgUrl, onFinish, altImg) => {
       imgDom.translateY += evt.deltaY * 1.2;
     },
     singleTapListener: () => {
-      hideViwer()
+      hideViewer()
     }
   })
 }
@@ -140,7 +140,7 @@ const imgClickListener = e => {
 }
 
 const viewerContainerClickListener = e => {
-  hideViwer()
+  hideViewer()
   e.stopPropagation()
 }
 
