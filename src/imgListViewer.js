@@ -28,7 +28,7 @@ let pannelAlloyFinger = null
 
 export const showImgListViewer = (imageList=[], options) => {
   if (!Array.isArray(imageList) || imageList.length <= 0) return
-  hideImgListViwer()
+  hideImgListViwer(false)
   scrollThrough(true)
   orientation = orit.phoneOrientation()
   orit.removeOrientationChangeListener(userOrientationListener)
@@ -59,7 +59,13 @@ const userOrientationListener = () => {
 /**
  * Hide image
  */
-export const hideImgListViwer = () => {
+export const hideImgListViwer = (notifyUser = true) => {
+  if(notifyUser 
+    && viewerData 
+    && viewerData.options 
+    && viewerData.options.onViewerHideListener) {
+    viewerData.options.onViewerHideListener()
+  }
   scrollThrough(false)
   removeViewerContainer()
 }

@@ -16,6 +16,9 @@ class Example extends React.Component {
       onPageChanged: pageIndex => {
         console.log('onPageChanged', pageIndex)
       },
+      onViewerHideListener: () => {
+        console.log('image list viewer hide')
+      },
       altImg 
     })
   } 
@@ -56,6 +59,9 @@ class Example extends React.Component {
 
   onShowClick() {
     viewer.showViewer(img_cover, {
+      onViewerHideListener: () => {
+        console.log('image viewer hide')
+      },
       // alt img
       altImg
     })
