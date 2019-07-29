@@ -1,6 +1,7 @@
     
 /node_modules/
 dist/
+preview/
 .DS_Store
 npm-debug.log
 .idea/
