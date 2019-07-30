@@ -16,34 +16,49 @@ const VIEWER_SINGLE_IMAGE_CONTAINER = 'pobi_mobile_viewer_single_image_container
 
 let containerDom = null
 let panelDom = null
-let pageCount = 0
 let currPage = 0
-const SCROLL_THRESHOLD = 0.1
-const DAMPING_FACTOR = 0.95
-const IMG_SCROLL_FACTOR = 1.5
 let orientation = orit.PORTRAIT
 let viewerData = null
 let alloyFingerList = []
 let pannelAlloyFinger = null
 
-export const showImgListViewer = (imageList=[], options) => {
-  if (!Array.isArray(imageList) || imageList.length <= 0) return
+function noop() {}
+
+export const showImgListViewer = (imgList=[], options) => {
+  if (!Array.isArray(imgList) || imgList.length <= 0) return
   hideImgListViewer(false)
   scrollThrough(true)
   orientation = orit.phoneOrientation()
   orit.removeOrientationChangeListener(userOrientationListener)
   orit.addOrientationChangeListener(userOrientationListener)
-  viewerData = { imageList, options }
-
-  pageCount = imageList.length
+  let wrapOptions = {}
+  if(options) wrapOptions = {...options}
+  const {
+    defaultPageIndex = 0,
+    altImg,
+    onPageChanged = noop,
+    onViewerHideListener = noop,
+    restDoms = [],
+    pageThreshold = 0.1,
+    pageDampingFactor = 0.95,
+    imgMoveFactor = 1.5,
+    imgMinScale = 1,
+    imgMaxScale = 2
+  } = wrapOptions
+  viewerData = { 
+    imgList: [...imgList], 
+    options: { defaultPageIndex, altImg, onPageChanged, onViewerHideListener, restDoms, pageThreshold, pageDampingFactor, imgMoveFactor, imgMinScale, imgMaxScale } 
+  }
+  if(defaultPageIndex < 0 || defaultPageIndex > imgList.length - 1) {
+    viewerData.options.defaultPageIndex = 0
+  }
   appendViewerContainer() 
   appendViewerPanel()
-  options = options || {}
-  imageList.forEach((imgUrl, index) => {
-    appendSingleViewer(imgUrl, index, options.onPageChanged, options.altImg)
+  viewerData.imgList.forEach((imgUrl, index) => {
+    appendSingleViewer(imgUrl, index)
   })
-  handleDefaultPage(options.defaultPageIndex, options.onPageChanged)
-  appendRestDoms(options.restDoms)
+  handleDefaultPage()
+  appendRestDoms()
 }
 
 const userOrientationListener = () => {
@@ -51,7 +66,7 @@ const userOrientationListener = () => {
   if(newOrientation !== orientation && viewerData) { // orientation changed
     // window.innerWidth, innerHeight变更会有延迟
     setTimeout(() => {
-      showImgListViewer(viewerData.imageList, viewerData.options)
+      showImgListViewer()
     }, 300)
   }
 }
@@ -60,53 +75,39 @@ const userOrientationListener = () => {
  * Hide image
  */
 export const hideImgListViewer = (notifyUser = true) => {
-  if(notifyUser 
-    && viewerData 
-    && viewerData.options 
-    && viewerData.options.onViewerHideListener) {
+  if(notifyUser) {
     viewerData.options.onViewerHideListener()
   }
   scrollThrough(false)
   removeViewerContainer()
 }
 
-const handleDefaultPage = (defaultPageIndex, onPageChanged) => {
-  if(Number.isInteger(defaultPageIndex) && defaultPageIndex >= 0 && defaultPageIndex < pageCount) {
-    currPage = defaultPageIndex
-    setTimeout(() => {
-      new To(panelDom, "translateX", -defaultPageIndex * window.innerWidth , 300, ease);
-    }, 300)
-  }
-  if(onPageChanged && typeof onPageChanged === 'function') {
-    onPageChanged(currPage)
-  }
+const handleDefaultPage = () => {
+  currPage = viewerData.options.defaultPageIndex
+  setTimeout(() => {
+    new To(panelDom, "translateX", -currPage * window.innerWidth , 300, ease, () => {
+      viewerData.options.onPageChanged(currPage)
+    });
+  }, 300)
 }
 
-const appendRestDoms = restDoms => {
-  if (Array.isArray(restDoms) && restDoms.length > 0) {
-    restDoms.forEach(additionDom => {
-      // Element
-      if(additionDom.nodeType === 1) {
-        handleAddition(additionDom)
-      } else {
-        console.warn('Ignore invalid dom', additionDom)
-      }
-    })
-  }
-}
-
-const handleAddition = additionDom => {
-  containerDom.appendChild(additionDom)
+const appendRestDoms = () => {
+  viewerData.options.restDoms.forEach(additionDom => {
+    // Element
+    if(additionDom.nodeType === 1) {
+      containerDom.appendChild(additionDom)
+    } else {
+      console.warn('Ignore invalid dom', additionDom)
+    }
+  })
 }
 
 const genImgId = index => `${VIEWER_SINGLE_IMAGE_ID}_${index}` 
 
-const scrollToPage = (dom, targetPage, prevPage, onPageChanged) => {
+const scrollToPage = (dom, targetPage, prevPage) => {
   // page changed, so we reset current page's translateX、scaleX、scaleY
   if(targetPage !== prevPage) {
-    if(onPageChanged && typeof onPageChanged === 'function') {
-      onPageChanged(targetPage)
-    }
+    viewerData.options.onPageChanged(targetPage)
     if(dom.translateX !== 0)  new To(dom, "translateX", 0 , 300, ease);
     if(dom.translateY !== 0) new To(dom, "translateY", 0, 300, ease);
     if(dom.scaleX > 1) new To(dom, "scaleX", 1 , 300, ease);
@@ -115,7 +116,7 @@ const scrollToPage = (dom, targetPage, prevPage, onPageChanged) => {
   panelToX(targetPage)
 }
 
-const appendSingleViewer = (imgUrl, index, onPageChanged, altImg) => {
+const appendSingleViewer = (imgUrl, index) => {
   const imgContainerDom = document.createElement('div')
   imgContainerDom.setAttribute('class', VIEWER_SINGLE_IMAGE_CONTAINER)
   imgContainerDom.style.width = window.innerWidth + 'px'
@@ -144,6 +145,15 @@ const appendSingleViewer = (imgUrl, index, onPageChanged, altImg) => {
     imgDom.style.width = imgWidth + 'px'
     imgDom.style.height = 'auto'
   }
+  const { 
+    altImg, 
+    pageDampingFactor,
+    imgMoveFactor,
+    pageThreshold,
+    imgMinScale,
+    imgMaxScale
+  } = viewerData.options
+  const pageCount = viewerData.imgList.length
   imageLoaded(imgUrl, (w, h) => {
     imgDom.src = imgUrl
     resetImgDom(w, h)
@@ -168,10 +178,10 @@ const appendSingleViewer = (imgUrl, index, onPageChanged, altImg) => {
       const currPageTranslateStart = currPage * window.innerWidth
       const { scaleX, width, translateX } = imgDom
       const { deltaX, deltaY } = evt
-      const panelTranslateX = DAMPING_FACTOR * deltaX + panelDom.translateX
+      const panelTranslateX = pageDampingFactor * deltaX + panelDom.translateX
       const realWidth = scaleX * width
       const scaledWidth = Math.abs(realWidth - width) / 2
-      const imgTranslateX = translateX + deltaX * IMG_SCROLL_FACTOR
+      const imgTranslateX = translateX + deltaX * imgMoveFactor
       if(Math.abs(deltaX) > Math.abs(deltaY)) {
         if(realWidth <= width) { // img shrinked
           panelDom.translateX = panelTranslateX 
@@ -205,7 +215,7 @@ const appendSingleViewer = (imgUrl, index, onPageChanged, altImg) => {
           }
         }
       } else {
-        imgDom.translateY += deltaY * IMG_SCROLL_FACTOR
+        imgDom.translateY += deltaY * imgMoveFactor
       }
     },
     touchEndListener: () => {
@@ -215,22 +225,24 @@ const appendSingleViewer = (imgUrl, index, onPageChanged, altImg) => {
       const factor = scrollFactor - page
       const fixedCurrPage = currPage
       if(page < currPage) { // to prev page
-        if(factor <= (1-SCROLL_THRESHOLD)) {
+        if(factor <= (1-pageThreshold)) {
           currPage -= 1 
         }
       } else { // to next page
-        if(factor >= SCROLL_THRESHOLD) {
+        if(factor >= pageThreshold) {
           if(currPage+1 !== pageCount && translateX < 0) {
             currPage += 1
           }
         }
       }
-      scrollToPage(imgDom, currPage, fixedCurrPage, onPageChanged)
+      scrollToPage(imgDom, currPage, fixedCurrPage)
     },
     singleTapListener: () => {
       hideImgListViewer()
     },
-    rotationAble: false
+    rotationAble: false,
+    imgMinScale,
+    imgMaxScale,
   })
   alloyFinger.imgDom = imgDom
   alloyFingerList.push(alloyFinger)
@@ -255,13 +267,13 @@ const appendViewerPanel = () => {
   if (!panelDom) {
     panelDom = document.createElement('div')
     panelDom.setAttribute('id', VIEWER_PANEL_ID)
-    panelDom.style.width = (window.innerWidth*pageCount) + 'px'
+    panelDom.style.width = (window.innerWidth*viewerData.imgList.length) + 'px'
     panelDom.style.height = window.innerHeight + 'px'
     containerDom.appendChild(panelDom)
     Transform(panelDom)
     const proxyFinger = () => {
       const imgAF = alloyFingerList[currPage]
-      if(imgAF && imgAF.imgDom.scaleX === imgAF.MIN_SCALE
+      if(imgAF && imgAF.imgDom.scaleX === viewerData.options.imgMinScale
         && imgAF.imgDom.translateX === 0) {
         return imgAF
       } else {
@@ -338,7 +350,6 @@ const removeViewerContainer = () => {
   orit.removeOrientationChangeListener(userOrientationListener)
   containerDom = null
   panelDom = null
-  pageCount = 0
   currPage = 0
   viewerData = null
   orientation = orit.PORTRAIT

@@ -13,6 +13,8 @@ let orientation = orit.PORTRAIT
 let viewerData = null
 let alloyFinger = null
 
+function noop() {}
+
 export const showViewer = (imgUrl, options) => {
   if (!imgUrl) return
   hideViewer(false)
@@ -20,28 +22,20 @@ export const showViewer = (imgUrl, options) => {
   orientation = orit.phoneOrientation()
   orit.removeOrientationChangeListener(userOrientationListener)
   orit.addOrientationChangeListener(userOrientationListener)
-  viewerData = { imgUrl, options }
-  function noop() {}
-  let onFinish = noop
-  let restDoms = []
-  let altImg = null
-  if(options) {
-    onFinish = options.onFinish || noop
-    restDoms = options.restDoms || []
-    altImg = options.altImg
-  }
+  let wrapOptions = {}
+  if(options) wrapOptions = {...options}
+  const {
+    altImg,
+    onViewerHideListener = noop,
+    restDoms = [],
+    imgMoveFactor = 1.5,
+    imgMinScale = 1,
+    imgMaxScale = 2,
+  } = wrapOptions
+  viewerData = { imgUrl, options: { altImg, onViewerHideListener, restDoms, imgMoveFactor, imgMinScale, imgMaxScale } }
   appendViewerContainer()
-  appendSingleViewer(imgUrl, onFinish, altImg)
-  if (restDoms && restDoms.length > 0) {
-    restDoms.forEach(additionDom => {
-      // Element
-      if(additionDom.nodeType === 1) {
-        handleAddition(additionDom)
-      } else {
-        console.warn('Ignore invalid dom', additionDom)
-      }
-    })
-  }
+  appendSingleViewer()
+  handleRestDoms()
 }
 
 const userOrientationListener = () => {
@@ -58,21 +52,34 @@ const userOrientationListener = () => {
  * Hide image
  */
 export const hideViewer = (notifyUser = true) => {
-  if(notifyUser 
-    && viewerData 
-    && viewerData.options 
-    && viewerData.options.onViewerHideListener) {
+  if(notifyUser) {
     viewerData.options.onViewerHideListener()
   }
   scrollThrough(false)
   removeViewerContainer()
 }
 
-const handleAddition = additionDom => {
-  containerDom.appendChild(additionDom)
+const handleRestDoms = () => {
+  viewerData.options.restDoms.forEach(additionDom => {
+    // Element
+    if(additionDom.nodeType === 1) {
+      containerDom.appendChild(additionDom)
+    } else {
+      console.warn('Ignore invalid dom', additionDom)
+    }
+  })
 }
 
-const appendSingleViewer = (imgUrl, onFinish, altImg) => {
+const appendSingleViewer = () => {
+  const {
+    imgUrl,
+    options: {
+      altImg,
+      imgMoveFactor,
+      imgMinScale,
+      imgMaxScale
+    }
+  } = viewerData
   const loadingDom = document.createElement('div')
   loadingDom.setAttribute('class', 'pobi_mobile_viewer_loading')
   containerDom.appendChild(loadingDom)
@@ -96,7 +103,6 @@ const appendSingleViewer = (imgUrl, onFinish, altImg) => {
   imageLoaded(imgUrl, (w, h) => {
     resetImgDom(w, h)
   }, error => {
-    onFinish(error)
     if(error) {
       containerDom.removeChild(imgDom)
       if(altImg) {
@@ -116,12 +122,14 @@ const appendSingleViewer = (imgUrl, onFinish, altImg) => {
   })
   alloyFinger = imgAlloyFinger(imgDom, {
     pressMoveListener: evt => {
-      imgDom.translateX += evt.deltaX * 1.2;
-      imgDom.translateY += evt.deltaY * 1.2;
+      imgDom.translateX += evt.deltaX * imgMoveFactor;
+      imgDom.translateY += evt.deltaY * imgMoveFactor;
     },
     singleTapListener: () => {
       hideViewer()
-    }
+    },
+    imgMinScale,
+    imgMaxScale
   })
 }
 

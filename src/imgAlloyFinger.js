@@ -3,16 +3,15 @@ import To from './utils/to'
 import Transform from './utils/transform'
 import ease from './utils/ease'
 
-const MIN_SCALE = 1
-const MAX_SCALE = 2
-
-const imgAlloyFinger = (el, options = {}) => {
+const imgAlloyFinger = (el, options) => {
     const {
       topPx = 0, 
       pressMoveListener = () => {}, 
       rotationAble = true,
       touchEndListener = () => {},
       singleTapListener = () => {},
+      imgMinScale,
+      imgMaxScale,
     } = options
     Transform(el);
     let initScale = 1;
@@ -39,15 +38,15 @@ const imgAlloyFinger = (el, options = {}) => {
       },
       multipointEnd: function () {
         To.stopAll();
-        if (el.scaleX < MIN_SCALE) {
-          new To(el, "scaleX", MIN_SCALE, 500, ease);
-          new To(el, "scaleY", MIN_SCALE, 500, ease);
+        if (el.scaleX < imgMinScale) {
+          new To(el, "scaleX", imgMinScale, 500, ease);
+          new To(el, "scaleY", imgMinScale, 500, ease);
           new To(el, "translateX", 0, 500, ease);
           new To(el, "translateY", 0, 500, ease);
         }
-        if (el.scaleX > MAX_SCALE) {
-          new To(el, "scaleX", MAX_SCALE, 500, ease);
-          new To(el, "scaleY", MAX_SCALE, 500, ease);
+        if (el.scaleX > imgMaxScale) {
+          new To(el, "scaleX", imgMaxScale, 500, ease);
+          new To(el, "scaleY", imgMaxScale, 500, ease);
           new To(el, "translateX", 0, 500, ease);
           new To(el, "translateY", 0, 500, ease);
         }
@@ -77,17 +76,17 @@ const imgAlloyFinger = (el, options = {}) => {
       doubleTap: function (evt) {
         disableSingleTab = true
         To.stopAll();
-        if (el.scaleX > 1.5 || el.scaleX < 1) {
-          new To(el, "scaleX", 1, 500, ease);
-          new To(el, "scaleY", 1, 500, ease);
+        if (el.scaleX > imgMaxScale || el.scaleX < imgMinScale) {
+          new To(el, "scaleX", imgMinScale, 500, ease);
+          new To(el, "scaleY", imgMinScale, 500, ease);
           new To(el, "translateX", 0, 500, ease);
           new To(el, "translateY", 0, 500, ease);
         } else {
           const box = el.getBoundingClientRect();
           const y = box.height - (( evt.changedTouches[0].pageY - topPx) * 2) - (box.height / 2 - ( evt.changedTouches[0].pageY - topPx));
           const x = box.width - (( evt.changedTouches[0].pageX) * 2) - (box.width / 2 - ( evt.changedTouches[0].pageX));
-          new To(el, "scaleX", 2, 500, ease);
-          new To(el, "scaleY", 2, 500, ease);
+          new To(el, "scaleX", imgMaxScale, 500, ease);
+          new To(el, "scaleY", imgMaxScale, 500, ease);
           new To(el, "translateX", x, 500, ease);
           new To(el, "translateY", y, 500, ease);
         }
@@ -109,7 +108,6 @@ const imgAlloyFinger = (el, options = {}) => {
     })
     alloyFinger.pressMoveListener = pressMoveListener
     alloyFinger.touchEndListener = touchEndListener
-    alloyFinger.MIN_SCALE = MIN_SCALE
     return alloyFinger
 }
 

@@ -77,13 +77,6 @@ class Example extends React.Component {
     })
     viewer.showViewer(img_uof, {
       restDoms: [el],
-      onFinish: (error) => {
-        if(error) {
-          console.error(error)
-        } else {
-          console.log('Image onload success')
-        }
-      }
     })
   }
 
