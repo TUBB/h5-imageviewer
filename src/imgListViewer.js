@@ -345,7 +345,7 @@ const appendViewerPanel = () => {
           evt.stopPropagation()
           setTimeout(() => {
             disableSingleTab = false
-          }, 300)
+          }, 500)
         }
       },
       pinch: function() {

@@ -1,8 +1,10 @@
 import './main.less'
 import imageLoaded from './utils/image_loaded'
 import imgAlloyFinger from './imgAlloyFinger'
+import AlloyFinger from 'alloyfinger'
 import orit from './utils/orientation'
 import scrollThrough from './utils/scrollThrough'
+import { Transform } from 'stream';
 
 const VIEWER_CONTAINER_ID = 'pobi_mobile_viewer_container_id'
 const VIEWER_SINGLE_IMAGE_ID = 'pobi_mobile_viewer_single_image_id'
@@ -13,6 +15,7 @@ let loadingDom = null
 let orientation = orit.PORTRAIT
 let viewerData = null
 let alloyFinger = null
+let containerAlloyFinger = null
 
 function noop() {}
 
@@ -141,16 +144,26 @@ const appendViewerContainer = () => {
     containerDom.setAttribute('id', VIEWER_CONTAINER_ID)
     containerDom.addEventListener('click', viewerContainerClickListener)
     document.body.appendChild(containerDom)
+    Transform(containerDom)
+    containerAlloyFinger = new AlloyFinger(containerDom, {
+      pressMove: function(evt) {
+        alloyFinger.pressMoveListener(evt)
+        evt.preventDefault()
+        evt.stopPropagation()
+      }
+    })
   }
 }
 
 const imgClickListener = e => {
   e.stopPropagation()
+  e.preventDefault()
 }
 
 const viewerContainerClickListener = e => {
   hideViewer()
   e.stopPropagation()
+  e.preventDefault()
 }
 
 const removeViewerContainer = () => {
@@ -163,6 +176,13 @@ const removeViewerContainer = () => {
   loadingDom = null
   viewerData = null
   orientation = orit.PORTRAIT
-  alloyFinger && alloyFinger.destroy()
-  alloyFinger = null
+  if(alloyFinger) {
+    alloyFinger.destroy()
+    alloyFinger.pressMoveListener = null
+    alloyFinger = null
+  }
+  if(containerAlloyFinger) {
+    containerAlloyFinger.destroy()
+    containerAlloyFinger = null
+  }
 }
