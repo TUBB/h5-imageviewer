@@ -40,8 +40,8 @@ export const showImgListViewer = (imgList=[], options) => {
     onViewerHideListener = noop,
     restDoms = [],
     pageThreshold = 0.1,
-    pageDampingFactor = 0.95,
-    imgMoveFactor = 1.5,
+    pageDampingFactor = 0.9,
+    imgMoveFactor = 2,
     imgMinScale = 1,
     imgMaxScale = 2
   } = wrapOptions
@@ -105,6 +105,7 @@ const appendRestDoms = () => {
 const genImgId = index => `${VIEWER_SINGLE_IMAGE_ID}_${index}` 
 
 const scrollToPage = (dom, targetPage, prevPage) => {
+  console.log(targetPage, prevPage)
   // page changed, so we reset current page's translateX、scaleX、scaleY
   if(targetPage !== prevPage) {
     viewerData.options.onPageChanged(targetPage)
@@ -114,6 +115,44 @@ const scrollToPage = (dom, targetPage, prevPage) => {
     if(dom.scaleY > 1) new To(dom, "scaleY", 1 , 300, ease);
   }
   panelToX(targetPage)
+}
+
+const resetImgDom = (imgDom, w, h) => {
+  let imgWidth = 0
+  if(w > window.innerWidth) {
+    imgWidth = window.innerWidth
+  } else {
+    imgWidth = w
+  }
+  imgDom.style.width = imgWidth + 'px'
+  imgDom.style.height = 'auto'
+}
+
+const img_onload = (imgDom, w, h, url) => {
+  imgDom.src = url
+  resetImgDom(imgDom, w, h)
+}
+
+const img_onerror = (imgContainerDom, imgDom, loadingDom, error) => {
+  if(error) {
+    const {
+      altImg
+    } = viewerData.options
+    if(altImg) {
+      const successListener = function(w, h) {
+        img_onload(imgDom, w, h, altImg)
+      }
+      const errorListener = function() {
+        imgContainerDom.removeChild(loadingDom)
+      }
+      imageLoaded.call(null, altImg, successListener, errorListener)
+      imgDom.src = altImg
+    } else {
+      imgContainerDom.removeChild(loadingDom)
+    }
+  } else {
+    imgContainerDom.removeChild(loadingDom)
+  }
 }
 
 const appendSingleViewer = (imgUrl, index) => {
@@ -133,20 +172,7 @@ const appendSingleViewer = (imgUrl, index) => {
   imgDom.style.height = window.innerWidth+'px'
   imgContainerDom.appendChild(imgDom)
 
-  imgDom.addEventListener('click', imgClickListener)
-
-  const resetImgDom = (w, h) => {
-    let imgWidth = 0
-    if(w > window.innerWidth) {
-      imgWidth = window.innerWidth
-    } else {
-      imgWidth = w
-    }
-    imgDom.style.width = imgWidth + 'px'
-    imgDom.style.height = 'auto'
-  }
   const { 
-    altImg, 
     pageDampingFactor,
     imgMoveFactor,
     pageThreshold,
@@ -154,27 +180,35 @@ const appendSingleViewer = (imgUrl, index) => {
     imgMaxScale
   } = viewerData.options
   const pageCount = viewerData.imgList.length
-  imageLoaded(imgUrl, (w, h) => {
-    imgDom.src = imgUrl
-    resetImgDom(w, h)
-  }, error => {
-    if(error) {
-      if(altImg) {
-        imageLoaded(altImg, (w, h) => {
-          imgDom.src = altImg
-          resetImgDom(w, h)
-        }, error => {
-          imgContainerDom.removeChild(loadingDom)
-        })
-      } else {
-        imgContainerDom.removeChild(loadingDom)
-      }
-    } else {
-      imgContainerDom.removeChild(loadingDom)
-    }
+  imageLoaded.call(null, imgUrl, function(w, h) {
+    img_onload(imgDom, w, h, imgUrl)
+  }, function(error) {
+    img_onerror(imgContainerDom, imgDom, loadingDom, error)
   })
   const alloyFinger = imgAlloyFinger(imgDom, {
-    pressMoveListener: (evt) => {
+    swipeListener: evt => {
+      const { translateX } = panelDom
+      const scrollFactor = Math.abs(translateX) / window.innerWidth
+      const page = Math.floor(scrollFactor)
+      const factor = scrollFactor - page
+      const fixedCurrPage = currPage
+      if(evt.direction === 'Left' 
+        && evt.isTrusted 
+        && currPage < pageCount - 1
+        && (page >= currPage && factor >= pageThreshold)) {
+        currPage += 1
+        scrollToPage(imgDom, currPage, fixedCurrPage)
+      } else if(evt.direction === 'Right' 
+        && evt.isTrusted 
+        && currPage > 0
+        && (page < currPage && factor <= (1-pageThreshold))) {
+        currPage -= 1
+        scrollToPage(imgDom, currPage, fixedCurrPage)
+      } else {
+        scrollToPage(imgDom, currPage, fixedCurrPage)
+      }
+    },
+    pressMoveListener: evt => {
       const currPageTranslateStart = currPage * window.innerWidth
       const { scaleX, width, translateX } = imgDom
       const { deltaX, deltaY } = evt
@@ -224,18 +258,21 @@ const appendSingleViewer = (imgUrl, index) => {
       const page = Math.floor(scrollFactor)
       const factor = scrollFactor - page
       const fixedCurrPage = currPage
+      let newPage = currPage
       if(page < currPage) { // to prev page
         if(factor <= (1-pageThreshold)) {
-          currPage -= 1 
+          newPage -= 1 
         }
       } else { // to next page
         if(factor >= pageThreshold) {
           if(currPage+1 !== pageCount && translateX < 0) {
-            currPage += 1
+            newPage += 1
           }
         }
       }
-      scrollToPage(imgDom, currPage, fixedCurrPage)
+      if(newPage === fixedCurrPage) {
+        scrollToPage(imgDom, fixedCurrPage, fixedCurrPage)
+      }
     },
     singleTapListener: () => {
       hideImgListViewer()
@@ -245,6 +282,8 @@ const appendSingleViewer = (imgUrl, index) => {
     imgMaxScale,
   })
   alloyFinger.imgDom = imgDom
+  alloyFinger.loadingDom = loadingDom
+  alloyFinger.imgContainerDom = imgContainerDom
   alloyFingerList.push(alloyFinger)
 }
 
@@ -282,24 +321,32 @@ const appendViewerPanel = () => {
     }
     let disableSingleTab = false
     pannelAlloyFinger = new AlloyFinger(panelDom, {
+      swipe: function(evt) {
+        const imgAF = proxyFinger()
+        if(imgAF) {
+          disableSingleTab = true
+          imgAF && imgAF.swipeListener(evt)
+        }
+      },
       pressMove: function(evt) {
         const imgAF = proxyFinger()
         if(imgAF) {
           disableSingleTab = true
           imgAF && imgAF.pressMoveListener(evt)
           evt.preventDefault()
+          evt.stopPropagation()
         }
       },
       touchEnd: function(evt) {
         const imgAF = proxyFinger()
         if(imgAF) {
-          imgAF && imgAF.touchEndListener(evt)
+          imgAF.touchEndListener(evt)
           evt.preventDefault()
+          evt.stopPropagation()
           setTimeout(() => {
             disableSingleTab = false
           }, 300)
         }
-        
       },
       pinch: function() {
         const imgAF = proxyFinger()
@@ -336,16 +383,13 @@ const appendViewerPanel = () => {
   }
 }
 
-const imgClickListener = e => {
-  e.stopPropagation()
-}
-
 const viewerContainerClickListener = e => {
   e.stopPropagation()
   hideImgListViewer()
 }
 
 const removeViewerContainer = () => {
+  containerDom && containerDom.removeEventListener('click', viewerContainerClickListener)
   containerDom && document.body.removeChild(containerDom)
   orit.removeOrientationChangeListener(userOrientationListener)
   containerDom = null
@@ -355,8 +399,12 @@ const removeViewerContainer = () => {
   orientation = orit.PORTRAIT
   alloyFingerList.forEach(alloyFinger => {
     alloyFinger.destroy()
+    alloyFinger.imgDom = null
+    alloyFinger.loadingDom = null
+    alloyFinger.imgContainerDom = null
     alloyFinger.pressMoveListener = null
     alloyFinger.touchEndListener = null
+    alloyFinger.swipeListener = null
     alloyFinger = null
   })
   alloyFingerList = []

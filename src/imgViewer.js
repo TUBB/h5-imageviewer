@@ -9,6 +9,7 @@ const VIEWER_SINGLE_IMAGE_ID = 'pobi_mobile_viewer_single_image_id'
 
 let containerDom = null
 let imgDom = null
+let loadingDom = null
 let orientation = orit.PORTRAIT
 let viewerData = null
 let alloyFinger = null
@@ -28,7 +29,7 @@ export const showViewer = (imgUrl, options) => {
     altImg,
     onViewerHideListener = noop,
     restDoms = [],
-    imgMoveFactor = 1.5,
+    imgMoveFactor = 2,
     imgMinScale = 1,
     imgMaxScale = 2,
   } = wrapOptions
@@ -80,7 +81,7 @@ const appendSingleViewer = () => {
       imgMaxScale
     }
   } = viewerData
-  const loadingDom = document.createElement('div')
+  loadingDom = document.createElement('div')
   loadingDom.setAttribute('class', 'pobi_mobile_viewer_loading')
   containerDom.appendChild(loadingDom)
 
@@ -153,10 +154,13 @@ const viewerContainerClickListener = e => {
 }
 
 const removeViewerContainer = () => {
+  containerDom && containerDom.removeEventListener('click', viewerContainerClickListener)
   containerDom && document.body.removeChild(containerDom)
   orit.removeOrientationChangeListener(userOrientationListener)
+  imgDom && imgDom.removeEventListener('click', imgClickListener)
   containerDom = null
   imgDom = null
+  loadingDom = null
   viewerData = null
   orientation = orit.PORTRAIT
   alloyFinger && alloyFinger.destroy()

@@ -45,6 +45,7 @@ class Example extends React.Component {
     viewer.showImgListViewer([img_cover, img_uof, img_timg], {
       defaultPageIndex: 1,
       onPageChanged: pageIndex => {
+        console.log(pageIndex)
         dotDoms.forEach((dotDom, index) => {
           if(pageIndex === index) {
             dotDom.className = 'dot dotSel'
