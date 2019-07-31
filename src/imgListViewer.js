@@ -28,9 +28,6 @@ export const showImgListViewer = (imgList=[], options) => {
   if (!Array.isArray(imgList) || imgList.length <= 0) return
   hideImgListViewer(false)
   scrollThrough(true)
-  orientation = orit.phoneOrientation()
-  orit.removeOrientationChangeListener(userOrientationListener)
-  orit.addOrientationChangeListener(userOrientationListener)
   let wrapOptions = {}
   if(options) wrapOptions = {...options}
   const {
@@ -52,6 +49,9 @@ export const showImgListViewer = (imgList=[], options) => {
   if(defaultPageIndex < 0 || defaultPageIndex > imgList.length - 1) {
     viewerData.options.defaultPageIndex = 0
   }
+  orientation = orit.phoneOrientation()
+  orit.removeOrientationChangeListener(userOrientationListener)
+  orit.addOrientationChangeListener(userOrientationListener)
   appendViewerContainer() 
   appendViewerPanel()
   viewerData.imgList.forEach((imgUrl, index) => {
@@ -66,7 +66,7 @@ const userOrientationListener = () => {
   if(newOrientation !== orientation && viewerData) { // orientation changed
     // window.innerWidth, innerHeight变更会有延迟
     setTimeout(() => {
-      showImgListViewer()
+      showImgListViewer(viewerData.imgList, viewerData.options)
     }, 300)
   }
 }

@@ -20,9 +20,6 @@ export const showViewer = (imgUrl, options) => {
   if (!imgUrl) return
   hideViewer(false)
   scrollThrough(true)
-  orientation = orit.phoneOrientation()
-  orit.removeOrientationChangeListener(userOrientationListener)
-  orit.addOrientationChangeListener(userOrientationListener)
   let wrapOptions = {}
   if(options) wrapOptions = {...options}
   const {
@@ -34,6 +31,9 @@ export const showViewer = (imgUrl, options) => {
     imgMaxScale = 2,
   } = wrapOptions
   viewerData = { imgUrl, options: { altImg, onViewerHideListener, restDoms, imgMoveFactor, imgMinScale, imgMaxScale } }
+  orientation = orit.phoneOrientation()
+  orit.removeOrientationChangeListener(userOrientationListener)
+  orit.addOrientationChangeListener(userOrientationListener)
   appendViewerContainer()
   appendSingleViewer()
   handleRestDoms()
