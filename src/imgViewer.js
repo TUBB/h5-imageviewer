@@ -57,10 +57,12 @@ const userOrientationListener = () => {
  */
 export const hideViewer = (notifyUser = true) => {
   if(notifyUser) {
-    viewerData.options.onViewerHideListener()
+    viewerData && viewerData.options.onViewerHideListener()
   }
-  scrollThrough(false)
-  removeViewerContainer()
+  if(viewerData) {
+    scrollThrough(false)
+    removeViewerContainer()
+  }
 }
 
 const handleRestDoms = () => {

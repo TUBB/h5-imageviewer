@@ -76,10 +76,12 @@ const userOrientationListener = () => {
  */
 export const hideImgListViewer = (notifyUser = true) => {
   if(notifyUser) {
-    viewerData.options.onViewerHideListener()
+    viewerData && viewerData.options.onViewerHideListener()
   }
-  scrollThrough(false)
-  removeViewerContainer()
+  if(viewerData) {
+    scrollThrough(false)
+    removeViewerContainer()
+  }
 }
 
 const handleDefaultPage = () => {
@@ -392,11 +394,11 @@ const removeViewerContainer = () => {
   containerDom && containerDom.removeEventListener('click', viewerContainerClickListener)
   containerDom && document.body.removeChild(containerDom)
   orit.removeOrientationChangeListener(userOrientationListener)
+  orientation = orit.PORTRAIT
   containerDom = null
   panelDom = null
   currPage = 0
   viewerData = null
-  orientation = orit.PORTRAIT
   alloyFingerList.forEach(alloyFinger => {
     alloyFinger.destroy()
     alloyFinger.imgDom = null
