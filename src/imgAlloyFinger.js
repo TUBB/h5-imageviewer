@@ -101,7 +101,7 @@ const imgAlloyFinger = (el, options) => {
       // // singleTab delay 250, so we delay more. true ended for me!!!!
       setTimeout(() => {
         disableSingleTab = false
-      }, 300)
+      }, 500)
     },
     swipe: function(evt) {
       disableSingleTab = true
