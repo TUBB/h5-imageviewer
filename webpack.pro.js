@@ -78,5 +78,6 @@ module.exports = {
       assetNameRegExp: /\.css$/g,
       cssProcessor: require('cssnano')
     }),
-  ]
+  ],
+  devtool: 'source-map'
 }
