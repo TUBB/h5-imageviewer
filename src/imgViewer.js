@@ -66,14 +66,19 @@ export const hideViewer = (notifyUser = true) => {
 }
 
 const handleRestDoms = () => {
-  viewerData.options.restDoms.forEach(additionDom => {
-    // Element
-    if(additionDom.nodeType === 1) {
-      containerDom.appendChild(additionDom)
-    } else {
-      console.warn('Ignore invalid dom', additionDom)
-    }
-  })
+  const {restDoms} = viewerData.options
+  if(restDoms.length > 0) {
+    let docfrag = document.createDocumentFragment()
+    restDoms.forEach(additionDom => {
+      if(additionDom.nodeType === 1) {
+        docfrag.appendChild(additionDom)
+      } else {
+        console.warn('Ignore invalid dom', additionDom)
+      }
+    })
+    containerDom.appendChild(docfrag)
+    docfrag = null
+  }
 }
 
 const appendSingleViewer = () => {
@@ -86,14 +91,15 @@ const appendSingleViewer = () => {
       imgMaxScale
     }
   } = viewerData
+  let docfrag = document.createDocumentFragment()
   loadingDom = document.createElement('div')
   loadingDom.setAttribute('class', 'pobi_mobile_viewer_loading')
-  containerDom.appendChild(loadingDom)
+  docfrag.appendChild(loadingDom)
 
   imgDom = document.createElement('img')
   imgDom.setAttribute('id', VIEWER_SINGLE_IMAGE_ID)
   imgDom.setAttribute('src', imgUrl)
-  containerDom.appendChild(imgDom)
+  docfrag.appendChild(imgDom)
 
   imgDom.addEventListener('click', imgClickListener)
   const resetImgDom = (w, h) => {
@@ -137,6 +143,8 @@ const appendSingleViewer = () => {
     imgMinScale,
     imgMaxScale
   })
+  containerDom.appendChild(docfrag)
+  docfrag = null
 }
 
 const appendViewerContainer = () => {

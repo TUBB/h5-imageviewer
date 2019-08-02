@@ -24,10 +24,21 @@ let pannelAlloyFinger = null
 
 function noop() {}
 
-export const showImgListViewer = (imgList=[], options) => {
+export const showImgListViewer = (imgList=[], options, screenRotation=false) => {
   if (!Array.isArray(imgList) || imgList.length <= 0) return
+  const cachedCurrPage = currPage
   hideImgListViewer(false)
   scrollThrough(true)
+  initParams(imgList, options, screenRotation, cachedCurrPage)
+  appendViewerContainer() 
+  appendViewerPanel()
+  handleDefaultPage()
+  handleImgDoms()
+  handleRestDoms()
+  handleOrientationChange()
+}
+
+const initParams = (imgList, options, screenRotation, cachedCurrPage) => {
   let wrapOptions = {}
   if(options) wrapOptions = {...options}
   const {
@@ -40,25 +51,26 @@ export const showImgListViewer = (imgList=[], options) => {
     pageDampingFactor = 0.9,
     imgMoveFactor = 2,
     imgMinScale = 1,
-    imgMaxScale = 2
+    imgMaxScale = 2,
+    limit = 11,
   } = wrapOptions
+  if(!/^[0-9]+$/.test(limit) || limit < 3 || limit % 2 !== 1) {
+    throw Error('limit must be odd number and greater than 3')
+  }
   viewerData = { 
     imgList: [...imgList], 
-    options: { defaultPageIndex, altImg, onPageChanged, onViewerHideListener, restDoms, pageThreshold, pageDampingFactor, imgMoveFactor, imgMinScale, imgMaxScale } 
+    options: { limit, defaultPageIndex: screenRotation ? cachedCurrPage : defaultPageIndex, altImg, onPageChanged, onViewerHideListener, restDoms, pageThreshold, pageDampingFactor, imgMoveFactor, imgMinScale, imgMaxScale } 
   }
-  if(defaultPageIndex < 0 || defaultPageIndex > imgList.length - 1) {
+  if(viewerData.options.defaultPageIndex < 0 
+    || viewerData.options.defaultPageIndex > imgList.length - 1) {
     viewerData.options.defaultPageIndex = 0
   }
+}
+
+const handleOrientationChange = () => {
   orientation = orit.phoneOrientation()
   orit.removeOrientationChangeListener(userOrientationListener)
   orit.addOrientationChangeListener(userOrientationListener)
-  appendViewerContainer() 
-  appendViewerPanel()
-  viewerData.imgList.forEach((imgUrl, index) => {
-    appendSingleViewer(imgUrl, index)
-  })
-  handleDefaultPage()
-  appendRestDoms()
 }
 
 const userOrientationListener = () => {
@@ -66,14 +78,11 @@ const userOrientationListener = () => {
   if(newOrientation !== orientation && viewerData) { // orientation changed
     // window.innerWidth, innerHeight变更会有延迟
     setTimeout(() => {
-      showImgListViewer(viewerData.imgList, viewerData.options)
+      showImgListViewer(viewerData.imgList, viewerData.options, true)
     }, 300)
   }
 }
 
-/**
- * Hide image
- */
 export const hideImgListViewer = (notifyUser = true) => {
   if(notifyUser) {
     viewerData && viewerData.options.onViewerHideListener()
@@ -93,21 +102,121 @@ const handleDefaultPage = () => {
   }, 300)
 }
 
-const appendRestDoms = () => {
-  viewerData.options.restDoms.forEach(additionDom => {
-    // Element
-    if(additionDom.nodeType === 1) {
-      containerDom.appendChild(additionDom)
-    } else {
-      console.warn('Ignore invalid dom', additionDom)
+const handleImgDoms = () => {
+  let docfrag = document.createDocumentFragment()
+  const { imgList } = viewerData 
+  const lastIndex = imgList.length - 1
+  const { limit } = viewerData.options
+  if(limit >= imgList.length) {
+    imgList.forEach((imgUrl, index) => {
+      docfrag.appendChild(appendSingleViewer(imgUrl, index))
+    })
+  } else {
+    const plDom = createImgPl()
+    imgList.forEach((imgUrl, index) => {
+      if(currPage === 0) {
+        if(index < limit) {
+          docfrag.appendChild(appendSingleViewer(imgUrl, index))
+        } 
+        else {
+          docfrag.appendChild(plDom.cloneNode())
+        }
+      } else if(currPage === lastIndex) {
+        if(index > lastIndex - limit) {
+          docfrag.appendChild(appendSingleViewer(imgUrl, index))
+        } 
+        else {
+          docfrag.appendChild(plDom.cloneNode())
+        }
+      } else {
+        const halfCount = Math.floor(limit / 2)
+        if(index === currPage || (index >= currPage - halfCount && index <= currPage + halfCount)) {
+          docfrag.appendChild(appendSingleViewer(imgUrl, index))
+        } 
+        else {
+          docfrag.appendChild(plDom.cloneNode())
+        }
+      }
+    })
+  }
+  panelDom.appendChild(docfrag)
+  docfrag = null
+}
+
+const replaceImgDom = (prevPage) => {
+  const { imgList, options: { limit } } = viewerData 
+  const lastIndex = imgList.length - 1
+  if(currPage === 0 
+    || currPage === lastIndex 
+    || currPage === prevPage
+    || limit >= imgList.length) {
+    return
+  }
+  setTimeout(() => {
+    const imgContainerDoms = panelDom.childNodes
+    const currNode = imgContainerDoms[currPage]
+    if(!currNode.hasAttribute('class')) {
+      currNode.replaceWith(appendSingleViewer(imgList[currPage], currPage))
     }
-  })
+    const halfCount = Math.floor(limit/2)
+    if(currPage > prevPage) { // scrolled to next page
+      const nextIndex = currPage + halfCount
+      const nextNode = imgContainerDoms[nextIndex]
+      if(!nextNode.hasAttribute('class')) {
+        nextNode.replaceWith(appendSingleViewer(imgList[nextIndex], nextIndex))
+      }
+      const ppIndex = currPage - halfCount - 1
+      if(ppIndex >= 0) {
+        const ppNode = imgContainerDoms[ppIndex]
+        ppNode.replaceWith(createImgPl())
+        const alloyFinger = alloyFingerList[ppIndex]
+        destroyAlloyFinger(alloyFinger)
+        alloyFingerList[ppIndex] = null
+      }
+    } else if(currPage < prevPage) { // scrolled to prev page
+      const prevIndex = currPage - halfCount
+      const prevNode = imgContainerDoms[prevIndex]
+      if(!prevNode.hasAttribute('class')) {
+        prevNode.replaceWith(appendSingleViewer(imgList[prevIndex], prevIndex))
+      }
+      const nnIndex = prevPage + halfCount
+      if(nnIndex <= lastIndex) {
+        const nnNode = imgContainerDoms[nnIndex]
+        nnNode.replaceWith(createImgPl())
+        const alloyFinger = alloyFingerList[nnIndex]
+        destroyAlloyFinger(alloyFinger)
+        alloyFingerList[nnIndex] = null
+      }
+    }
+  }, 0)
+}
+
+const createImgPl = () => {
+  const pl = document.createElement('div')
+  pl.style.width = window.innerWidth+'px'
+  pl.style.visibility = 'hidden'
+  return pl
+}
+
+const handleRestDoms = () => {
+  const {restDoms} = viewerData.options
+  if(restDoms.length > 0) {
+    let docfrag = document.createDocumentFragment()
+    restDoms.forEach(additionDom => {
+      if(additionDom.nodeType === 1) {
+        docfrag.appendChild(additionDom)
+      } else {
+        console.warn('Ignore invalid dom', additionDom)
+      }
+    })
+    containerDom.appendChild(docfrag)
+    docfrag = null
+  }
 }
 
 const genImgId = index => `${VIEWER_SINGLE_IMAGE_ID}_${index}` 
 
 const scrollToPage = (dom, targetPage, prevPage) => {
-  console.log(targetPage, prevPage)
   // page changed, so we reset current page's translateX、scaleX、scaleY
   if(targetPage !== prevPage) {
     viewerData.options.onPageChanged(targetPage)
@@ -116,7 +225,14 @@ const scrollToPage = (dom, targetPage, prevPage) => {
     if(dom.scaleX > 1) new To(dom, "scaleX", 1 , 300, ease);
     if(dom.scaleY > 1) new To(dom, "scaleY", 1 , 300, ease);
   }
-  panelToX(targetPage)
+  panelToX(targetPage, prevPage)
+}
+
+const panelToX = (targetPage, prevPage) => {
+  const toX = -targetPage * window.innerWidth
+  if(Math.abs(panelDom.translateX) !== Math.abs(toX)) {
+    new To(panelDom, "translateX",  toX, 300, ease, replaceImgDom.bind(this, prevPage));
+  }
 }
 
 const resetImgDom = (imgDom, w, h) => {
@@ -161,7 +277,6 @@ const appendSingleViewer = (imgUrl, index) => {
   const imgContainerDom = document.createElement('div')
   imgContainerDom.setAttribute('class', VIEWER_SINGLE_IMAGE_CONTAINER)
   imgContainerDom.style.width = window.innerWidth + 'px'
-  panelDom.appendChild(imgContainerDom)
 
   const loadingDom = document.createElement('div')
   loadingDom.setAttribute('class', 'pobi_mobile_viewer_loading')
@@ -283,14 +398,8 @@ const appendSingleViewer = (imgUrl, index) => {
     imgMinScale,
     imgMaxScale,
   })
-  alloyFinger.imgDom = imgDom
-  alloyFinger.loadingDom = loadingDom
-  alloyFinger.imgContainerDom = imgContainerDom
-  alloyFingerList.push(alloyFinger)
-}
-
-const panelToX = (page) => {
-  new To(panelDom, "translateX", -page*window.innerWidth , 500, ease);
+  alloyFingerList[index] = alloyFinger
+  return imgContainerDom
 }
 
 const appendViewerContainer = () => {
@@ -314,8 +423,9 @@ const appendViewerPanel = () => {
     Transform(panelDom)
     const proxyFinger = () => {
       const imgAF = alloyFingerList[currPage]
-      if(imgAF && imgAF.imgDom.scaleX === viewerData.options.imgMinScale
-        && imgAF.imgDom.translateX === 0) {
+      const imgDom = panelDom.childNodes[currPage].childNodes[0]
+      if(imgAF && imgDom.scaleX === viewerData.options.imgMinScale
+        && imgDom.translateX === 0) {
         return imgAF
       } else {
         return null
@@ -400,16 +510,19 @@ const removeViewerContainer = () => {
   currPage = 0
   viewerData = null
   alloyFingerList.forEach(alloyFinger => {
-    alloyFinger.destroy()
-    alloyFinger.imgDom = null
-    alloyFinger.loadingDom = null
-    alloyFinger.imgContainerDom = null
-    alloyFinger.pressMoveListener = null
-    alloyFinger.touchEndListener = null
-    alloyFinger.swipeListener = null
-    alloyFinger = null
+    destroyAlloyFinger(alloyFinger)
   })
   alloyFingerList = []
   pannelAlloyFinger && pannelAlloyFinger.destroy()
   pannelAlloyFinger = null
+}
+
+const destroyAlloyFinger = alloyFinger => {
+  if(alloyFinger) {
+    alloyFinger.destroy()
+    alloyFinger.pressMoveListener = null
+    alloyFinger.touchEndListener = null
+    alloyFinger.swipeListener = null
+    alloyFinger = null
+  }
 }
