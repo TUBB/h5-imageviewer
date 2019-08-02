@@ -4,7 +4,7 @@ import imgAlloyFinger from './imgAlloyFinger'
 import AlloyFinger from 'alloyfinger'
 import orit from './utils/orientation'
 import scrollThrough from './utils/scrollThrough'
-import { Transform } from 'stream';
+import Transform from './utils/transform';
 
 const VIEWER_CONTAINER_ID = 'pobi_mobile_viewer_container_id'
 const VIEWER_SINGLE_IMAGE_ID = 'pobi_mobile_viewer_single_image_id'
