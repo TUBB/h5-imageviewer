@@ -81,6 +81,16 @@ class Example extends React.Component {
     })
   }
 
+  onShowImgsXXXXL() {
+    const imgs = []
+    for (let index = 0; index < 999; index++) {
+      imgs.push(img_cover)
+    }
+    viewer.showImgListViewer(imgs, {
+      defaultPageIndex: 102
+    })
+  }
+
   render() {
     return (
       <div className='example'>
@@ -88,6 +98,7 @@ class Example extends React.Component {
         <button className='btnShow2' onClick={this.onShowClickWithDoms}>Show image with addition doms</button>
         <button className='btnShow2' onClick={this.onShowImgsClick}>Show images</button>
         <button className='btnShow2' onClick={this.onShowImgsClickWithDoms}>Show images with addition doms</button>
+        <button className='btnShow2' onClick={this.onShowImgsXXXXL}>Show images(a great number of images)</button>
       </div>
     )
   }
