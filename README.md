@@ -23,9 +23,9 @@ npm install h5-imageviewer
 ```
 
 # Usage
+Show single image viewer
 ```js
 import viewer from 'h5-imageviewer'
-// show single image viewer
 viewer.showViewer(
   imgUrl, // image url (base64 also support)
   {
@@ -37,7 +37,12 @@ viewer.showViewer(
     imgMaxScale = 2, // maximum scale of the image
   }
 )
-// show image list viewer
+// hide image viewer
+viewer.hideImgViewer()
+```
+Show image list viewer
+```js
+import viewer from 'h5-imageviewer'
 viewer.showImgListViewer(
   imgList, // image url list (base64 also support)
   {
@@ -50,14 +55,14 @@ viewer.showImgListViewer(
     pageDampingFactor = 0.9, // damping factor
     imgMoveFactor = 2,
     imgMinScale = 1,
-    imgMaxScale = 2
+    imgMaxScale = 2,
+    limit = 11, // how many pages will be kept offscreen in an idle state
   }
 )
-// hide image viewer
-viewer.hideImgViewer()
 // hide image list viewer
 viewer.hideImgListViewer()
 ```
+
 Please check [EXAMPLE](https://github.com/TUBB/h5-imageviewer/blob/master/src/example/example.js) for detail.
 
 # Dependencies
