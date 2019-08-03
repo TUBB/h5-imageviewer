@@ -156,19 +156,19 @@ const replaceImgDom = (prevPage) => {
     const imgContainerDoms = panelDom.childNodes
     const currNode = imgContainerDoms[currPage]
     if(!currNode.hasAttribute('class')) {
-      currNode.replaceWith(appendSingleViewer(imgList[currPage], currPage))
+      panelDom.replaceChild(appendSingleViewer(imgList[currPage], currPage), currNode)
     }
     const halfCount = Math.floor(limit/2)
     if(currPage > prevPage) { // scrolled to next page
       const nextIndex = currPage + halfCount
       const nextNode = imgContainerDoms[nextIndex]
       if(!nextNode.hasAttribute('class')) {
-        nextNode.replaceWith(appendSingleViewer(imgList[nextIndex], nextIndex))
+        panelDom.replaceChild(appendSingleViewer(imgList[nextIndex], nextIndex), nextNode)
       }
       const ppIndex = currPage - halfCount - 1
       if(ppIndex >= 0) {
         const ppNode = imgContainerDoms[ppIndex]
-        ppNode.replaceWith(createImgPl())
+        panelDom.replaceChild(createImgPl(), ppNode)
         const alloyFinger = alloyFingerList[ppIndex]
         destroyAlloyFinger(alloyFinger)
         alloyFingerList[ppIndex] = null
@@ -177,12 +177,12 @@ const replaceImgDom = (prevPage) => {
       const prevIndex = currPage - halfCount
       const prevNode = imgContainerDoms[prevIndex]
       if(!prevNode.hasAttribute('class')) {
-        prevNode.replaceWith(appendSingleViewer(imgList[prevIndex], prevIndex))
+        panelDom.replaceChild(appendSingleViewer(imgList[prevIndex], prevIndex), prevNode)
       }
       const nnIndex = prevPage + halfCount
       if(nnIndex <= lastIndex) {
         const nnNode = imgContainerDoms[nnIndex]
-        nnNode.replaceWith(createImgPl())
+        panelDom.replaceChild(createImgPl(), nnNode)
         const alloyFinger = alloyFingerList[nnIndex]
         destroyAlloyFinger(alloyFinger)
         alloyFingerList[nnIndex] = null
@@ -310,13 +310,11 @@ const appendSingleViewer = (imgUrl, index) => {
       const factor = scrollFactor - page
       const fixedCurrPage = currPage
       if(evt.direction === 'Left' 
-        && evt.isTrusted 
         && currPage < pageCount - 1
         && (page >= currPage && factor >= pageThreshold)) {
         currPage += 1
         scrollToPage(imgDom, currPage, fixedCurrPage)
       } else if(evt.direction === 'Right' 
-        && evt.isTrusted 
         && currPage > 0
         && (page < currPage && factor <= (1-pageThreshold))) {
         currPage -= 1
