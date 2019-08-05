@@ -19,8 +19,13 @@ class Example extends React.Component {
         console.log('image list viewer hide')
       },
       altImg,
+      defaultPageIndex: 1,
       limit: 3, 
     })
+    setTimeout(() => {
+      // go to the page
+      viewer.setCurrentPage(0)
+    }, 2000)
   } 
 
   onShowImgsClickWithDoms() {

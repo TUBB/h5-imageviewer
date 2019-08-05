@@ -32,10 +32,55 @@ export const showImgListViewer = (imgList=[], options, screenRotation=false) => 
   initParams(imgList, options, screenRotation, cachedCurrPage)
   appendViewerContainer() 
   appendViewerPanel()
-  handleDefaultPage()
+  scrollToFixedPage(viewerData.options.defaultPageIndex)
   handleImgDoms()
   handleRestDoms()
   handleOrientationChange()
+}
+
+export const setCurrentPage = pageIndex => {
+  if(viewerData === null 
+    || pageIndex < 0 
+    || pageIndex > viewerData.imgList.length - 1) {
+    return
+  }
+  const {imgList, options:{limit}} = viewerData
+  const lastIndex = imgList.length - 1
+  const updateDom = (page) => {
+    const currNode = panelDom.childNodes[page]
+    if(!currNode.hasAttribute('class')) {
+      panelDom.replaceChild(appendSingleViewer(imgList[page], page), currNode)
+    }
+  }
+  if(pageIndex === 0) {
+    let page = pageIndex
+    while(page < limit) {
+      updateDom(page)
+      page++
+    }
+  } else if(pageIndex === lastIndex) {
+    let page = pageIndex
+    const endedIndex = pageIndex - limit
+    while(page > endedIndex && page >= 0) {
+      updateDom(page)
+      page--
+    }
+  } else {
+    const halfCount = Math.floor(limit / 2)
+    let firstHalf = pageIndex
+    const firstHalfEndedIndex = firstHalf - halfCount
+    while(firstHalf >= firstHalfEndedIndex && firstHalf >= 0) {
+      updateDom(firstHalf)
+      firstHalf--
+    }
+    let secondHalf = pageIndex
+    const secondHalfEndedIndex = secondHalf + halfCount
+    while(secondHalf <= secondHalfEndedIndex && secondHalf <= lastIndex) {
+      updateDom(secondHalf)
+      secondHalf++
+    }
+  }
+  scrollToFixedPage(pageIndex)
 }
 
 const initParams = (imgList, options, screenRotation, cachedCurrPage) => {
@@ -93,8 +138,8 @@ export const hideImgListViewer = (notifyUser = true) => {
   }
 }
 
-const handleDefaultPage = () => {
-  currPage = viewerData.options.defaultPageIndex
+const scrollToFixedPage = (page) => {
+  currPage = page
   setTimeout(() => {
     new To(panelDom, "translateX", -currPage * window.innerWidth , 300, ease, () => {
       viewerData.options.onPageChanged(currPage)
