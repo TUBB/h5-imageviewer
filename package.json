@@ -1,6 +1,6 @@
 {
   "name": "h5-imageviewer",
-  "version": "0.4.8",
+  "version": "0.4.9",
   "description": "h5 imageviewer for mobile platform, support all web frameworks",
   "main": "dist/bundle.js",
   "files": [
@@ -16,6 +16,16 @@
   "dependencies": {
     "alloyfinger": "^0.1.16"
   },
+  "browserslist": [
+    "defaults",
+    "Chrome >= 49",
+    "Firefox >= 48",
+    "Safari >= 9",
+    "ChromeAndroid >= 38",
+    "ios_saf >= 9",
+    "Android >= 3",
+    "not dead"
+  ],
   "devDependencies": {
     "@babel/core": "^7.4.5",
     "@babel/preset-env": "^7.4.5",

@@ -35,21 +35,7 @@ module.exports = {
             loader: 'postcss-loader',
             options: {
                 plugins: () => [
-                    require('autoprefixer')({
-                      browsers: [
-                        "defaults",
-                        "Chrome >= 49",
-                        "Firefox >= 48",
-                        "Safari >= 9",
-                        "Edge >= 12",
-                        "IE >= 9",
-                        "Opera 47-48",
-                        "ChromeAndroid >= 38",
-                        "ios_saf >= 9",
-                        "Android >= 3",
-                        "not dead"
-                      ]                    
-                    })
+                  require('autoprefixer')({})
                 ]
             }
           },
