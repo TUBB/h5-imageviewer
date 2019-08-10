@@ -1,8 +1,8 @@
 # H5 image viewer
-H5 image viewer for mobile platform, support all web frameworks.
+H5 image viewer for mobile platform, support React/Vue/AngularJS.
 
 # Features
-* Rotate、pinch、move、swipe and double tap the image.
+* Rotate、pinch、move、swipe and double tap scale the image.
 * Page turning.
 * Support landscape and portrait screen.
 * Support all web frameworks.
@@ -44,7 +44,7 @@ Show image list viewer
 ```js
 import viewer from 'h5-imageviewer'
 viewer.showImgListViewer(
-  imgList, // image url list (base64 also support)
+  imgList, // image url list (base64 also supported)
   {
     defaultPageIndex = 0, // the default page index (start with 0)
     altImg,
