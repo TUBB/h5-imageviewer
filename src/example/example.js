@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './example.less'
-import viewer from '../index';
+import viewer from '../index'
 import img_cover from '../assets/cover.jpg'
 import img_close from '../assets/close.png'
 import img_timg from '../assets/timg.jpg'
@@ -22,10 +22,10 @@ class Example extends React.Component {
       defaultPageIndex: 1,
       limit: 3, 
     })
-    setTimeout(() => {
-      // go to the page
-      viewer.setCurrentPage(0)
-    }, 2000)
+    // setTimeout(() => {
+    //   // go to the page
+    //   viewer.setCurrentPage(0)
+    // }, 2000)
   } 
 
   onShowImgsClickWithDoms() {
@@ -60,6 +60,8 @@ class Example extends React.Component {
         })
       },
       restDoms: [el, indicator],
+      zIndex: 10,
+      viewerBg: '#333333'
     })
   }
 
@@ -69,7 +71,9 @@ class Example extends React.Component {
         console.log('image viewer hide')
       },
       // alt img
-      altImg
+      altImg,
+      zIndex: 666,
+      viewerBg: '#000000'
     })
   }
 

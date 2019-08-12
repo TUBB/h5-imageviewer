@@ -1,10 +1,12 @@
 import './main.less'
-import AlloyFinger from 'alloyfinger'
 import imageLoaded from './utils/image_loaded'
 import Transform from './utils/transform'
 import To from './utils/to'
 import ease from './utils/ease'
-import imgAlloyFinger from './imgAlloyFinger'
+import imgAlloyFinger, {
+  triggerDoubleTab,
+  triggerPointEnd,
+} from './imgAlloyFinger'
 import orit from './utils/orientation'
 import scrollThrough from './utils/scrollThrough'
 import IMG_EMPTY from './utils/altImg'
@@ -19,8 +21,7 @@ let panelDom = null
 let currPage = 0
 let orientation = orit.PORTRAIT
 let viewerData = null
-let alloyFingerList = []
-let pannelAlloyFinger = null
+let viewerAlloyFinger = null
 
 function noop() {}
 
@@ -36,6 +37,16 @@ export const showImgListViewer = (imgList=[], options, screenRotation=false) => 
   handleImgDoms()
   handleRestDoms()
   handleOrientationChange()
+}
+
+export const hideImgListViewer = (notifyUser = true) => {
+  if(notifyUser) {
+    viewerData && viewerData.options.onViewerHideListener()
+  }
+  if(viewerData) {
+    scrollThrough(false)
+    removeViewerContainer()
+  }
 }
 
 export const setCurrentPage = pageIndex => {
@@ -94,22 +105,148 @@ const initParams = (imgList, options, screenRotation, cachedCurrPage) => {
     restDoms = [],
     pageThreshold = 0.1,
     pageDampingFactor = 0.9,
-    imgMoveFactor = 2,
+    imgMoveFactor = 1.5,
     imgMinScale = 1,
     imgMaxScale = 2,
     limit = 11,
+    zIndex = null,
+    viewerBg = null,
   } = wrapOptions
   if(!/^[0-9]+$/.test(limit) || limit < 3 || limit % 2 !== 1) {
     throw Error('limit must be odd number and greater than 3')
   }
   viewerData = { 
     imgList: [...imgList], 
-    options: { limit, defaultPageIndex: screenRotation ? cachedCurrPage : defaultPageIndex, altImg, onPageChanged, onViewerHideListener, restDoms, pageThreshold, pageDampingFactor, imgMoveFactor, imgMinScale, imgMaxScale } 
+    options: { 
+      limit, 
+      defaultPageIndex: screenRotation ? cachedCurrPage : defaultPageIndex, 
+      altImg, 
+      onPageChanged, 
+      onViewerHideListener, 
+      restDoms, 
+      pageThreshold, 
+      pageDampingFactor, 
+      imgMoveFactor, 
+      imgMinScale, 
+      imgMaxScale,
+      zIndex,
+      viewerBg 
+    } 
   }
   if(viewerData.options.defaultPageIndex < 0 
     || viewerData.options.defaultPageIndex > imgList.length - 1) {
     viewerData.options.defaultPageIndex = 0
   }
+}
+
+const registerViewerAlloyFinger = () => {
+  const { 
+    pageDampingFactor,
+    imgMoveFactor,
+    pageThreshold,
+    imgMinScale,
+    imgMaxScale
+  } = viewerData.options
+  const pageCount = viewerData.imgList.length
+  viewerAlloyFinger = imgAlloyFinger(containerDom, {
+    swipeListener: evt => {
+      const { translateX } = panelDom
+      const scrollFactor = Math.abs(translateX) / window.innerWidth
+      const page = Math.floor(scrollFactor)
+      const factor = scrollFactor - page
+      const fixedCurrPage = currPage
+      if(evt.direction === 'Left' 
+        && currPage < pageCount - 1
+        && (page >= currPage && factor >= pageThreshold)) {
+        currPage += 1
+        scrollToPage(getCurrImgDom(fixedCurrPage), currPage, fixedCurrPage)
+      } else if(evt.direction === 'Right' 
+        && currPage > 0
+        && (page < currPage && factor <= (1-pageThreshold))) {
+        currPage -= 1
+        scrollToPage(getCurrImgDom(fixedCurrPage), currPage, fixedCurrPage)
+      } else {
+        scrollToPage(getCurrImgDom(), currPage, fixedCurrPage)
+      }
+    },
+    pressMoveListener: evt => {
+      const currPageTranslateStart = currPage * window.innerWidth
+      const { scaleX, width, translateX } = getCurrImgDom()
+      const { deltaX, deltaY } = evt
+      const panelTranslateX = pageDampingFactor * deltaX + panelDom.translateX
+      const realWidth = scaleX * width
+      const scaledWidth = Math.abs(realWidth - width) / 2
+      const imgTranslateX = translateX + deltaX * imgMoveFactor
+      if(Math.abs(deltaX) > Math.abs(deltaY)) {
+        if(realWidth <= width) { // img shrinked
+          panelDom.translateX = panelTranslateX 
+        } else { // img enlarged
+          if(Math.abs(imgTranslateX) - scaledWidth <= 0) {
+            if(deltaX > 0) { // move to right
+              if(Math.abs(panelDom.translateX) > currPageTranslateStart) {
+                const panelReturnDis = panelTranslateX
+                if(Math.abs(panelReturnDis) <  currPageTranslateStart) {
+                  panelDom.translateX = -currPageTranslateStart
+                } else {
+                  panelDom.translateX = panelReturnDis
+                }
+              } else {
+                getCurrImgDom().translateX = imgTranslateX
+              }
+            } else { // move to left
+              if(Math.abs(panelDom.translateX) < currPageTranslateStart) {
+                const panelReturnDis = panelTranslateX
+                if(Math.abs(panelReturnDis) >  currPageTranslateStart) {
+                  panelDom.translateX = -currPageTranslateStart
+                } else {
+                  panelDom.translateX = panelReturnDis
+                }
+              } else {
+                getCurrImgDom().translateX = imgTranslateX
+              }
+            }
+          } else {
+            panelDom.translateX = panelTranslateX
+          }
+        }
+      } else {
+        getCurrImgDom().translateY += deltaY * imgMoveFactor
+      }
+    },
+    touchEndListener: () => {
+      const { translateX } = panelDom
+      const scrollFactor = Math.abs(translateX) / window.innerWidth
+      const page = Math.floor(scrollFactor)
+      const factor = scrollFactor - page
+      const fixedCurrPage = currPage
+      let newPage = currPage
+      if(page < currPage) { // to prev page
+        if(factor <= (1-pageThreshold)) {
+          newPage -= 1 
+        }
+      } else { // to next page
+        if(factor >= pageThreshold) {
+          if(currPage+1 !== pageCount && translateX < 0) {
+            newPage += 1
+          }
+        }
+      }
+      if(newPage === fixedCurrPage) {
+        scrollToPage(getCurrImgDom(fixedCurrPage), fixedCurrPage, fixedCurrPage)
+      }
+    },
+    singleTapListener: () => {
+      hideImgListViewer()
+    },
+    doubleTapListener: evt => {
+      triggerDoubleTab(getCurrImgDom(), evt, imgMinScale, imgMaxScale)
+    },
+    multipointEndListener: () => {
+      triggerPointEnd(getCurrImgDom(), imgMinScale, imgMaxScale)
+    },
+    multipointStartListener: () => getCurrImgDom().scaleX,
+    pinchListener: (evt, initScale) => getCurrImgDom().scaleX = getCurrImgDom().scaleY = initScale * evt.zoom,
+  })
 }
 
 const handleOrientationChange = () => {
@@ -128,22 +265,12 @@ const userOrientationListener = () => {
   }
 }
 
-export const hideImgListViewer = (notifyUser = true) => {
-  if(notifyUser) {
-    viewerData && viewerData.options.onViewerHideListener()
-  }
-  if(viewerData) {
-    scrollThrough(false)
-    removeViewerContainer()
-  }
-}
-
 const scrollToFixedPage = (page) => {
   currPage = page
   setTimeout(() => {
     new To(panelDom, "translateX", -currPage * window.innerWidth , 300, ease, () => {
       viewerData.options.onPageChanged(currPage)
-    });
+    })
   }, 300)
 }
 
@@ -214,9 +341,6 @@ const replaceImgDom = (prevPage) => {
       if(ppIndex >= 0) {
         const ppNode = imgContainerDoms[ppIndex]
         panelDom.replaceChild(createImgPl(), ppNode)
-        const alloyFinger = alloyFingerList[ppIndex]
-        destroyAlloyFinger(alloyFinger)
-        alloyFingerList[ppIndex] = null
       }
     } else if(currPage < prevPage) { // scrolled to prev page
       const prevIndex = currPage - halfCount
@@ -228,9 +352,6 @@ const replaceImgDom = (prevPage) => {
       if(nnIndex <= lastIndex) {
         const nnNode = imgContainerDoms[nnIndex]
         panelDom.replaceChild(createImgPl(), nnNode)
-        const alloyFinger = alloyFingerList[nnIndex]
-        destroyAlloyFinger(alloyFinger)
-        alloyFingerList[nnIndex] = null
       }
     }
   }, 0)
@@ -248,6 +369,7 @@ const handleRestDoms = () => {
   if(restDoms.length > 0) {
     let docfrag = document.createDocumentFragment()
     restDoms.forEach(additionDom => {
+      // element
       if(additionDom.nodeType === 1) {
         docfrag.appendChild(additionDom)
       } else {
@@ -265,10 +387,11 @@ const scrollToPage = (dom, targetPage, prevPage) => {
   // page changed, so we reset current page's translateX、scaleX、scaleY
   if(targetPage !== prevPage) {
     viewerData.options.onPageChanged(targetPage)
-    if(dom.translateX !== 0)  new To(dom, "translateX", 0 , 300, ease);
-    if(dom.translateY !== 0) new To(dom, "translateY", 0, 300, ease);
-    if(dom.scaleX > 1) new To(dom, "scaleX", 1 , 300, ease);
-    if(dom.scaleY > 1) new To(dom, "scaleY", 1 , 300, ease);
+    const { translateX, translateY, scaleX, scaleY } = dom
+    if(translateX !== 0)  new To(dom, "translateX", 0 , 300, ease)
+    if(translateY !== 0) new To(dom, "translateY", 0, 300, ease)
+    if(scaleX > 1) new To(dom, "scaleX", 1 , 300, ease)
+    if(scaleY > 1) new To(dom, "scaleY", 1 , 300, ease)
   }
   panelToX(targetPage, prevPage)
 }
@@ -276,11 +399,11 @@ const scrollToPage = (dom, targetPage, prevPage) => {
 const panelToX = (targetPage, prevPage) => {
   const toX = -targetPage * window.innerWidth
   if(Math.abs(panelDom.translateX) !== Math.abs(toX)) {
-    new To(panelDom, "translateX",  toX, 300, ease, replaceImgDom.bind(this, prevPage));
+    new To(panelDom, "translateX",  toX, 300, ease, replaceImgDom.bind(this, prevPage))
   }
 }
 
-const resetImgDom = (imgDom, w, h) => {
+const resetImgDom = (imgDom, w) => {
   let imgWidth = 0
   if(w > window.innerWidth) {
     imgWidth = window.innerWidth
@@ -334,114 +457,13 @@ const appendSingleViewer = (imgUrl, index) => {
   imgDom.style.height = window.innerWidth+'px'
   imgContainerDom.appendChild(imgDom)
 
-  const { 
-    pageDampingFactor,
-    imgMoveFactor,
-    pageThreshold,
-    imgMinScale,
-    imgMaxScale
-  } = viewerData.options
-  const pageCount = viewerData.imgList.length
   imageLoaded.call(null, imgUrl, function(w, h) {
     img_onload(imgDom, w, h, imgUrl)
   }, function(error) {
     img_onerror(imgContainerDom, imgDom, loadingDom, error)
   })
-  const alloyFinger = imgAlloyFinger(imgDom, {
-    swipeListener: evt => {
-      const { translateX } = panelDom
-      const scrollFactor = Math.abs(translateX) / window.innerWidth
-      const page = Math.floor(scrollFactor)
-      const factor = scrollFactor - page
-      const fixedCurrPage = currPage
-      if(evt.direction === 'Left' 
-        && currPage < pageCount - 1
-        && (page >= currPage && factor >= pageThreshold)) {
-        currPage += 1
-        scrollToPage(imgDom, currPage, fixedCurrPage)
-      } else if(evt.direction === 'Right' 
-        && currPage > 0
-        && (page < currPage && factor <= (1-pageThreshold))) {
-        currPage -= 1
-        scrollToPage(imgDom, currPage, fixedCurrPage)
-      } else {
-        scrollToPage(imgDom, currPage, fixedCurrPage)
-      }
-    },
-    pressMoveListener: evt => {
-      const currPageTranslateStart = currPage * window.innerWidth
-      const { scaleX, width, translateX } = imgDom
-      const { deltaX, deltaY } = evt
-      const panelTranslateX = pageDampingFactor * deltaX + panelDom.translateX
-      const realWidth = scaleX * width
-      const scaledWidth = Math.abs(realWidth - width) / 2
-      const imgTranslateX = translateX + deltaX * imgMoveFactor
-      if(Math.abs(deltaX) > Math.abs(deltaY)) {
-        if(realWidth <= width) { // img shrinked
-          panelDom.translateX = panelTranslateX 
-        } else { // img enlarged
-          if(Math.abs(imgTranslateX) - scaledWidth <= 0) {
-            if(deltaX > 0) { // move to right
-              if(Math.abs(panelDom.translateX) > currPageTranslateStart) {
-                const panelReturnDis = panelTranslateX
-                if(Math.abs(panelReturnDis) <  currPageTranslateStart) {
-                  panelDom.translateX = -currPageTranslateStart
-                } else {
-                  panelDom.translateX = panelReturnDis
-                }
-              } else {
-                imgDom.translateX = imgTranslateX
-              }
-            } else { // move to left
-              if(Math.abs(panelDom.translateX) < currPageTranslateStart) {
-                const panelReturnDis = panelTranslateX
-                if(Math.abs(panelReturnDis) >  currPageTranslateStart) {
-                  panelDom.translateX = -currPageTranslateStart
-                } else {
-                  panelDom.translateX = panelReturnDis
-                }
-              } else {
-                imgDom.translateX = imgTranslateX
-              }
-            }
-          } else {
-            panelDom.translateX = panelTranslateX
-          }
-        }
-      } else {
-        imgDom.translateY += deltaY * imgMoveFactor
-      }
-    },
-    touchEndListener: () => {
-      const { translateX } = panelDom
-      const scrollFactor = Math.abs(translateX) / window.innerWidth
-      const page = Math.floor(scrollFactor)
-      const factor = scrollFactor - page
-      const fixedCurrPage = currPage
-      let newPage = currPage
-      if(page < currPage) { // to prev page
-        if(factor <= (1-pageThreshold)) {
-          newPage -= 1 
-        }
-      } else { // to next page
-        if(factor >= pageThreshold) {
-          if(currPage+1 !== pageCount && translateX < 0) {
-            newPage += 1
-          }
-        }
-      }
-      if(newPage === fixedCurrPage) {
-        scrollToPage(imgDom, fixedCurrPage, fixedCurrPage)
-      }
-    },
-    singleTapListener: () => {
-      hideImgListViewer()
-    },
-    rotationAble: false,
-    imgMinScale,
-    imgMaxScale,
-  })
-  alloyFingerList[index] = alloyFinger
+
+  Transform(imgDom)
   return imgContainerDom
 }
 
@@ -450,9 +472,23 @@ const appendViewerContainer = () => {
   if (!containerDom) {
     containerDom = document.createElement('div')
     containerDom.setAttribute('id', VIEWER_CONTAINER_ID)
+    containerDom.style.width = window.innerWidth+'px'
+    containerDom.style.height = window.innerHeight+'px'
+    const { zIndex, viewerBg } = viewerData.options
+    if(zIndex !== null) {
+      containerDom.style['z-index'] = zIndex
+    }
+    if(viewerBg !== null) {
+      containerDom.style.background = viewerBg
+    }
     containerDom.addEventListener('click', viewerContainerClickListener)
     document.body.appendChild(containerDom)
+    registerViewerAlloyFinger()
   }
+}
+
+const getCurrImgDom = (page = currPage) => {
+  return panelDom.childNodes[page].childNodes[0]
 }
 
 const appendViewerPanel = () => {
@@ -464,77 +500,6 @@ const appendViewerPanel = () => {
     panelDom.style.height = window.innerHeight + 'px'
     containerDom.appendChild(panelDom)
     Transform(panelDom)
-    const proxyFinger = () => {
-      const imgAF = alloyFingerList[currPage]
-      const imgDom = panelDom.childNodes[currPage].childNodes[0]
-      if(imgAF && imgDom.scaleX === viewerData.options.imgMinScale
-        && imgDom.translateX === 0) {
-        return imgAF
-      } else {
-        return null
-      }
-    }
-    let disableSingleTab = false
-    pannelAlloyFinger = new AlloyFinger(panelDom, {
-      swipe: function(evt) {
-        const imgAF = proxyFinger()
-        if(imgAF) {
-          disableSingleTab = true
-          imgAF && imgAF.swipeListener(evt)
-        }
-      },
-      pressMove: function(evt) {
-        const imgAF = proxyFinger()
-        if(imgAF) {
-          disableSingleTab = true
-          imgAF && imgAF.pressMoveListener(evt)
-          evt.preventDefault()
-          evt.stopPropagation()
-        }
-      },
-      touchEnd: function(evt) {
-        const imgAF = proxyFinger()
-        if(imgAF) {
-          imgAF.touchEndListener(evt)
-          evt.preventDefault()
-          evt.stopPropagation()
-          setTimeout(() => {
-            disableSingleTab = false
-          }, 500)
-        }
-      },
-      pinch: function() {
-        const imgAF = proxyFinger()
-        if(imgAF) {
-          disableSingleTab = true
-        }
-      },
-      rotate: function() {
-        const imgAF = proxyFinger()
-        if(imgAF) {
-          disableSingleTab = true
-        }
-      },
-      doubleTap: function() {
-        const imgAF = proxyFinger()
-        if(imgAF) {
-          disableSingleTab = true
-          To.stopAll();
-        }
-      },
-      singleTap: function() {
-        const imgAF = proxyFinger()
-        if(imgAF && !disableSingleTab) {
-          hideImgListViewer()
-        }
-      },
-      multipointEnd: function () {
-        To.stopAll()
-      },
-      multipointStart: function () {
-        To.stopAll()
-      },
-    })
   }
 }
 
@@ -552,20 +517,9 @@ const removeViewerContainer = () => {
   panelDom = null
   currPage = 0
   viewerData = null
-  alloyFingerList.forEach(alloyFinger => {
-    destroyAlloyFinger(alloyFinger)
-  })
-  alloyFingerList = []
-  pannelAlloyFinger && pannelAlloyFinger.destroy()
-  pannelAlloyFinger = null
-}
-
-const destroyAlloyFinger = alloyFinger => {
-  if(alloyFinger) {
-    alloyFinger.destroy()
-    alloyFinger.pressMoveListener = null
-    alloyFinger.touchEndListener = null
-    alloyFinger.swipeListener = null
-    alloyFinger = null
+  if(viewerAlloyFinger) {
+    viewerAlloyFinger.pressMoveListener = null
+    viewerAlloyFinger.destroy()
+    viewerAlloyFinger = null
   }
 }

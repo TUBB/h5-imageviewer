@@ -1,10 +1,14 @@
 import './main.less'
 import imageLoaded from './utils/image_loaded'
-import imgAlloyFinger from './imgAlloyFinger'
+import imgAlloyFinger, {
+  triggerDoubleTab,
+  triggerPointEnd,
+  triggerRotateEnd,
+} from './imgAlloyFinger'
 import AlloyFinger from 'alloyfinger'
 import orit from './utils/orientation'
 import scrollThrough from './utils/scrollThrough'
-import Transform from './utils/transform';
+import Transform from './utils/transform'
 
 const VIEWER_CONTAINER_ID = 'pobi_mobile_viewer_container_id'
 const VIEWER_SINGLE_IMAGE_ID = 'pobi_mobile_viewer_single_image_id'
@@ -29,11 +33,13 @@ export const showViewer = (imgUrl, options) => {
     altImg,
     onViewerHideListener = noop,
     restDoms = [],
-    imgMoveFactor = 2,
+    imgMoveFactor = 1.5,
     imgMinScale = 1,
     imgMaxScale = 2,
+    zIndex = null,
+    viewerBg = null,
   } = wrapOptions
-  viewerData = { imgUrl, options: { altImg, onViewerHideListener, restDoms, imgMoveFactor, imgMinScale, imgMaxScale } }
+  viewerData = { imgUrl, options: { altImg, onViewerHideListener, restDoms, imgMoveFactor, imgMinScale, imgMaxScale, zIndex, viewerBg } }
   orientation = orit.phoneOrientation()
   orit.removeOrientationChangeListener(userOrientationListener)
   orit.addOrientationChangeListener(userOrientationListener)
@@ -42,19 +48,6 @@ export const showViewer = (imgUrl, options) => {
   handleRestDoms()
 }
 
-const userOrientationListener = () => {
-  const newOrientation = orit.phoneOrientation()
-  if(newOrientation !== orientation && viewerData) { // orientation changed
-    // window.innerWidth, innerHeight变更会有延迟
-    setTimeout(() => {
-      showViewer(viewerData.imgUrl, viewerData.options)
-    }, 300)
-  }
-}
-
-/**
- * Hide image
- */
 export const hideViewer = (notifyUser = true) => {
   if(notifyUser) {
     viewerData && viewerData.options.onViewerHideListener()
@@ -133,15 +126,23 @@ const appendSingleViewer = () => {
     }
   })
   alloyFinger = imgAlloyFinger(imgDom, {
+    multipointStartListener: () => imgDom.scaleX,
+    rotateListener: (evt) => imgDom.rotateZ += evt.angle,
+    pinchListener: (evt, initScale) => imgDom.scaleX = imgDom.scaleY = initScale * evt.zoom,
     pressMoveListener: evt => {
-      imgDom.translateX += evt.deltaX * imgMoveFactor;
-      imgDom.translateY += evt.deltaY * imgMoveFactor;
+      imgDom.translateX += evt.deltaX * imgMoveFactor
+      imgDom.translateY += evt.deltaY * imgMoveFactor
     },
     singleTapListener: () => {
       hideViewer()
     },
-    imgMinScale,
-    imgMaxScale
+    doubleTapListener: evt => {
+      triggerDoubleTab(imgDom, evt, imgMinScale, imgMaxScale)
+    },
+    multipointEndListener: () => {
+      triggerPointEnd(imgDom, imgMinScale, imgMaxScale)
+      triggerRotateEnd(imgDom)
+    }
   })
   containerDom.appendChild(docfrag)
   docfrag = null
@@ -152,6 +153,13 @@ const appendViewerContainer = () => {
   if (!containerDom) {
     containerDom = document.createElement('div')
     containerDom.setAttribute('id', VIEWER_CONTAINER_ID)
+    const { zIndex, viewerBg } = viewerData.options
+    if(zIndex !== null) {
+      containerDom.style['z-index'] = zIndex
+    }
+    if(viewerBg !== null) {
+      containerDom.style.background = viewerBg
+    }
     containerDom.addEventListener('click', viewerContainerClickListener)
     document.body.appendChild(containerDom)
     Transform(containerDom)
@@ -189,10 +197,22 @@ const removeViewerContainer = () => {
   if(alloyFinger) {
     alloyFinger.destroy()
     alloyFinger.pressMoveListener = null
+    alloyFinger.triggerDoubleTap = null
+    alloyFinger.triggerMultipointEnd = null
     alloyFinger = null
   }
   if(containerAlloyFinger) {
     containerAlloyFinger.destroy()
     containerAlloyFinger = null
+  }
+}
+
+const userOrientationListener = () => {
+  const newOrientation = orit.phoneOrientation()
+  if(newOrientation !== orientation && viewerData) { // orientation changed
+    // window.innerWidth, innerHeight变更会有延迟
+    setTimeout(() => {
+      showViewer(viewerData.imgUrl, viewerData.options)
+    }, 300)
   }
 }
