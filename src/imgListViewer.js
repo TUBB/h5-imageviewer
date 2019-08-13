@@ -59,7 +59,7 @@ export const setCurrentPage = pageIndex => {
   const lastIndex = imgList.length - 1
   const updateDom = (page) => {
     const currNode = panelDom.childNodes[page]
-    if(!currNode.hasAttribute('class')) {
+    if(currNode && !currNode.hasAttribute('class')) {
       panelDom.replaceChild(appendSingleViewer(imgList[page], page), currNode)
     }
   }
@@ -89,6 +89,21 @@ export const setCurrentPage = pageIndex => {
     while(secondHalf <= secondHalfEndedIndex && secondHalf <= lastIndex) {
       updateDom(secondHalf)
       secondHalf++
+    }
+  }
+  const currImgDom = panelDom.childNodes[currPage].childNodes[0]
+  if(currImgDom) {
+    const { scaleX, scaleY, translateX, translateY } = currImgDom
+    const { imgMinScale } = viewerData.options
+    if(scaleX !== imgMinScale || scaleY !== imgMinScale) {
+      new To(currImgDom, "scaleX", imgMinScale, 200, ease)
+      new To(currImgDom, "scaleY", imgMinScale, 200, ease)
+    }
+    if(translateX !== 0) {
+      new To(currImgDom, "translateX", 0, 200, ease)
+    }
+    if(translateY !== 0) {
+      new To(currImgDom, "translateY", 0, 200, ease)
     }
   }
   scrollToFixedPage(pageIndex)
@@ -518,8 +533,8 @@ const removeViewerContainer = () => {
   currPage = 0
   viewerData = null
   if(viewerAlloyFinger) {
-    viewerAlloyFinger.pressMoveListener = null
     viewerAlloyFinger.destroy()
+    viewerAlloyFinger.pressMoveListener = null
     viewerAlloyFinger = null
   }
 }

@@ -197,8 +197,6 @@ const removeViewerContainer = () => {
   if(alloyFinger) {
     alloyFinger.destroy()
     alloyFinger.pressMoveListener = null
-    alloyFinger.triggerDoubleTap = null
-    alloyFinger.triggerMultipointEnd = null
     alloyFinger = null
   }
   if(containerAlloyFinger) {
@@ -209,8 +207,9 @@ const removeViewerContainer = () => {
 
 const userOrientationListener = () => {
   const newOrientation = orit.phoneOrientation()
-  if(newOrientation !== orientation && viewerData) { // orientation changed
-    // window.innerWidth, innerHeight变更会有延迟
+  // orientation changed
+  if(newOrientation !== orientation && viewerData) { 
+    // window.innerWidth and innerHeight changed not immediately
     setTimeout(() => {
       showViewer(viewerData.imgUrl, viewerData.options)
     }, 300)
