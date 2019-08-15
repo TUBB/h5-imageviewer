@@ -91,7 +91,7 @@ export const setCurrentPage = pageIndex => {
       secondHalf++
     }
   }
-  const currImgDom = panelDom.childNodes[currPage].childNodes[0]
+  const currImgDom = getCurrImgDom()
   if(currImgDom) {
     const { scaleX, scaleY, translateX, translateY } = currImgDom
     const { imgMinScale } = viewerData.options

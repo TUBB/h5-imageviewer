@@ -93,7 +93,7 @@ class Example extends React.Component {
   onShowImgsXXXXL() {
     const imgs = []
     for (let index = 0; index < 999; index++) {
-      imgs.push(img_cover)
+      imgs.push(index % 2 === 0 ? img_cover : img_uof)
     }
     viewer.showImgListViewer(imgs, {
       defaultPageIndex: 0,

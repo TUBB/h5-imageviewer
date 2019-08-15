@@ -26,44 +26,51 @@ npm install h5-imageviewer
 Show single image viewer
 ```js
 import viewer from 'h5-imageviewer'
-viewer.showViewer(
-  imgUrl, // image url (base64 also support)
-  {
-    altImg, // placeholder when image onerror
-    onViewerHideListener = ()=>{}, // listener for viewer hide
-    restDoms = [], // config some addition dom elements
-    imgMoveFactor = 2, // movement speed (imgMoveFactor * translateX or translateY)
-    imgMinScale = 1, // minimum scale of the image
-    imgMaxScale = 2, // maximum scale of the image
-  }
-)
+viewer.showViewer(imgUrl)
 // hide image viewer
 viewer.hideImgViewer()
 ```
 Show image list viewer
 ```js
 import viewer from 'h5-imageviewer'
-viewer.showImgListViewer(
-  imgList, // image url list (base64 also supported)
-  {
-    defaultPageIndex = 0, // the default page index (start with 0)
-    altImg,
-    onPageChanged = pageIndex=>{}, // page changed listener
-    onViewerHideListener = ()=>{},
-    restDoms = [],
-    pageThreshold = 0.1, // threshold of go to next or prev page (window.innerWidth * pageThreshold)
-    pageDampingFactor = 0.9, // damping factor
-    imgMoveFactor = 2,
-    imgMinScale = 1,
-    imgMaxScale = 2,
-    limit = 11, // how many pages will be kept offscreen in an idle state
-  }
-)
+viewer.showImgListViewer(imgList)
 // hide image list viewer
 viewer.hideImgListViewer()
 ```
 
 Please check [EXAMPLE](https://github.com/TUBB/h5-imageviewer/blob/master/src/example/example.js) for detail.
+
+# Apis
+
+## Show single image viewer(`viewer.showViewer(imgUrl, options)`)
+| Property         |  Type   | Default | Required | Description                                                               |
+| :--------------- | :-----: | :-----: | :------: | :------------------------------------------------------------------------ |
+| imgUrl | string | | yes | image url list (base64 also supported) |
+| options.altImg | string | | no | placeholder when image onerror |
+| options.onViewerHideListener | function() | | no | listener for viewer hide |
+| options.restDoms | array | | no |  | the attach dom array |
+| options.imgMoveFactor | number | 1.5 | no | movement speed (imgMoveFactor * translateX or translateY) |
+| options.imgMinScale | number | 1 | no | minimum scale of the image |
+| options.imgMaxScale | number | 2 | no | maximum scale of the image |
+| options.zIndex | number | 999 | no | the viewer `z-index` |
+| options.viewerBg | string | #000000 | no | the viewer `background` |
+
+## Show image list viewer(`viewer.showImgListViewer(imgList, options)`)
+| Property         |  Type   | Default | Required | Description                                                               |
+| :--------------- | :-----: | :-----: | :------: | :------------------------------------------------------------------------ |
+| imgList | array | | yes | image url (base64 also support) |
+| options.altImg | string | | no | placeholder when image onerror |
+| options.onViewerHideListener | function() | | no | listener for viewer hide |
+| options.restDoms | array | | no |  | the attach dom array |
+| options.imgMoveFactor | number | 1.5 | no | movement speed (imgMoveFactor * translateX or translateY) |
+| options.imgMinScale | number | 1 | no | minimum scale of the image |
+| options.imgMaxScale | number | 2 | no | maximum scale of the image |
+| options.zIndex | number | 999 | no | the viewer `z-index` |
+| options.viewerBg | string | #000000 | no | the viewer `background` |
+| options.onPageChanged | function(pageIndex) | | no | the page changed listener |
+| options.limit | number | 11 | no | how many pages will be kept offscreen in an idle state |
+| options.pageThreshold | number | 0.1 | no | threshold of go to next or prev page (window.innerWidth * pageThreshold) |
+| options.pageDampingFactor | number | 0.9 | no | damping factor |
 
 # Dependencies
 * [AlloyFinger](https://github.com/AlloyTeam/AlloyFinger)
