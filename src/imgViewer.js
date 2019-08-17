@@ -115,7 +115,7 @@ const appendSingleViewer = () => {
           containerDom.appendChild(imgDom)
           imgDom.src = altImg
           resetImgDom(w, h)
-        }, error => {
+        }, () => {
           containerDom.removeChild(loadingDom)
         })
       } else {

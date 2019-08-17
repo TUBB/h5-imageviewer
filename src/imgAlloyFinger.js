@@ -108,20 +108,57 @@ export function triggerRotateEnd(dom) {
   }
 }
 
-export function triggerDoubleTab(dom, evt, imgMinScale, imgMaxScale, topPx = 0) {
+export function triggerDoubleTab(dom, evt, imgMinScale, imgMaxScale) {
   if (dom.scaleX >= imgMaxScale) {
     new To(dom, "scaleX", imgMinScale, 500, ease)
     new To(dom, "scaleY", imgMinScale, 500, ease)
     new To(dom, "translateX", 0, 500, ease)
     new To(dom, "translateY", 0, 500, ease)
   } else {
+    const { pageX, pageY } = evt.changedTouches[0]
     const box = dom.getBoundingClientRect()
-    const y = box.height - (( evt.changedTouches[0].pageY - topPx) * 2) - (box.height / 2 - ( evt.changedTouches[0].pageY - topPx))
-    const x = box.width - (( evt.changedTouches[0].pageX) * 2) - (box.width / 2 - ( evt.changedTouches[0].pageX))
+    const topY = getImgDomTopY(dom)
+    const leftX = getImgDomLeftX(dom)
+    const y = box.height - (pageY - topY) * 2 - (box.height / 2 - (pageY - topY))
+    const x = box.width - (pageX - leftX) * 2 - (box.width / 2 - (pageX - leftX))
     new To(dom, "scaleX", imgMaxScale, 500, ease)
     new To(dom, "scaleY", imgMaxScale, 500, ease)
     new To(dom, "translateX", x, 500, ease)
     new To(dom, "translateY", y, 500, ease)
+  }
+}
+
+function getImgDomTopY(dom) {
+  const { translateY } = dom
+  const box = dom.getBoundingClientRect()
+  const topX = (window.innerHeight - box.height) / 2 + translateY
+  if(box.height > window.innerHeight) {
+    if(translateY > 0) {
+      return topX  + (box.height - window.innerHeight) / 2
+    } else if(translateY < 0) {
+      return topX  - (box.height - window.innerHeight) / 2
+    } else {
+      return topX
+    }
+  } else {
+    return topX
+  }
+}
+
+function getImgDomLeftX(dom) {
+  const { translateX } = dom
+  const box = dom.getBoundingClientRect()
+  const leftX = (window.innerWidth - box.width) / 2 + translateX
+  if(box.width > window.innerWidth) {
+    if(translateX > 0) {
+      return leftX  + (box.width - window.innerWidth) / 2
+    } else if(translateX < 0) {
+      return leftX  - (box.width - window.innerWidth) / 2
+    } else {
+      return leftX
+    }
+  } else {
+    return leftX
   }
 }
 

@@ -42,7 +42,7 @@ Please check [EXAMPLE](https://github.com/TUBB/h5-imageviewer/blob/master/src/ex
 
 # Apis
 
-## Show single image viewer(`viewer.showViewer(imgUrl, options)`)
+### Show single image viewer(`viewer.showViewer(imgUrl, options)`)
 | Property         |  Type   | Default | Required | Description                                                               |
 | :--------------- | :-----: | :-----: | :------: | :------------------------------------------------------------------------ |
 | imgUrl | string | | yes | image url list (base64 also supported) |
@@ -55,7 +55,7 @@ Please check [EXAMPLE](https://github.com/TUBB/h5-imageviewer/blob/master/src/ex
 | options.zIndex | number | 999 | no | the viewer `z-index` |
 | options.viewerBg | string | #000000 | no | the viewer `background` |
 
-## Show image list viewer(`viewer.showImgListViewer(imgList, options)`)
+### Show image list viewer(`viewer.showImgListViewer(imgList, options)`)
 | Property         |  Type   | Default | Required | Description                                                               |
 | :--------------- | :-----: | :-----: | :------: | :------------------------------------------------------------------------ |
 | imgList | array | | yes | image url (base64 also support) |
