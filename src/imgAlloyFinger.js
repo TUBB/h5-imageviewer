@@ -131,17 +131,17 @@ export function triggerDoubleTab(dom, evt, imgMinScale, imgMaxScale) {
 function getImgDomTopY(dom) {
   const { translateY } = dom
   const box = dom.getBoundingClientRect()
-  const topX = (window.innerHeight - box.height) / 2 + translateY
+  const topY = (window.innerHeight - box.height) / 2 + translateY
   if(box.height > window.innerHeight) {
     if(translateY > 0) {
-      return topX  + (box.height - window.innerHeight) / 2
+      return topY  + (box.height - window.innerHeight) / 2
     } else if(translateY < 0) {
-      return topX  - (box.height - window.innerHeight) / 2
+      return topY  - (box.height - window.innerHeight) / 2
     } else {
-      return topX
+      return topY
     }
   } else {
-    return topX
+    return topY
   }
 }
 
