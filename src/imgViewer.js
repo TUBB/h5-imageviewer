@@ -23,14 +23,14 @@ let containerAlloyFinger = null
 
 function noop() {}
 
-export const showViewer = (imgUrl, options) => {
-  if (!imgUrl) return
+export const showViewer = (imgObj, options) => {
+  if (!imgObj || !imgObj.src) return
   hideViewer(false)
   scrollThrough(true)
   let wrapOptions = {}
   if(options) wrapOptions = {...options}
   const {
-    altImg,
+    errorPlh,
     onViewerHideListener = noop,
     restDoms = [],
     imgMoveFactor = 1.5,
@@ -39,7 +39,7 @@ export const showViewer = (imgUrl, options) => {
     zIndex = null,
     viewerBg = null,
   } = wrapOptions
-  viewerData = { imgUrl, options: { altImg, onViewerHideListener, restDoms, imgMoveFactor, imgMinScale, imgMaxScale, zIndex, viewerBg } }
+  viewerData = { imgObj, options: { errorPlh, onViewerHideListener, restDoms, imgMoveFactor, imgMinScale, imgMaxScale, zIndex, viewerBg } }
   orientation = orit.phoneOrientation()
   orit.removeOrientationChangeListener(userOrientationListener)
   orit.addOrientationChangeListener(userOrientationListener)
@@ -76,9 +76,9 @@ const handleRestDoms = () => {
 
 const appendSingleViewer = () => {
   const {
-    imgUrl,
+    imgObj,
     options: {
-      altImg,
+      errorPlh,
       imgMoveFactor,
       imgMinScale,
       imgMaxScale
@@ -91,7 +91,9 @@ const appendSingleViewer = () => {
 
   imgDom = document.createElement('img')
   imgDom.setAttribute('id', VIEWER_SINGLE_IMAGE_ID)
-  imgDom.setAttribute('src', imgUrl)
+  
+  imgDom.setAttribute('src', imgObj.src)
+  imgDom.setAttribute('alt', imgObj.alt || '')
   docfrag.appendChild(imgDom)
 
   imgDom.addEventListener('click', imgClickListener)
@@ -105,15 +107,15 @@ const appendSingleViewer = () => {
     imgDom.style.width = imgWidth + 'px'
     imgDom.style.height = 'auto'
   }
-  imageLoaded(imgUrl, (w, h) => {
+  imageLoaded(imgObj.src, (w, h) => {
     resetImgDom(w, h)
   }, error => {
     if(error) {
       containerDom.removeChild(imgDom)
-      if(altImg) {
-        imageLoaded(altImg, (w, h) => {
+      if(errorPlh) {
+        imageLoaded(errorPlh, (w, h) => {
           containerDom.appendChild(imgDom)
-          imgDom.src = altImg
+          imgDom.src = errorPlh
           resetImgDom(w, h)
         }, () => {
           containerDom.removeChild(loadingDom)
@@ -211,7 +213,7 @@ const userOrientationListener = () => {
   if(newOrientation !== orientation && viewerData) { 
     // window.innerWidth and innerHeight changed not immediately
     setTimeout(() => {
-      showViewer(viewerData.imgUrl, viewerData.options)
+      showViewer(viewerData.imgObj, viewerData.options)
     }, 300)
   }
 }

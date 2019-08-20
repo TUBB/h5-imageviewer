@@ -9,7 +9,7 @@ import imgAlloyFinger, {
 } from './imgAlloyFinger'
 import orit from './utils/orientation'
 import scrollThrough from './utils/scrollThrough'
-import IMG_EMPTY from './utils/altImg'
+import IMG_EMPTY from './utils/error_plh'
 
 const VIEWER_CONTAINER_ID = 'pobi_mobile_viewer_container_id'
 const VIEWER_PANEL_ID = 'pobi_mobile_viewer_panel_id'
@@ -114,7 +114,7 @@ const initParams = (imgList, options, screenRotation, cachedCurrPage) => {
   if(options) wrapOptions = {...options}
   const {
     defaultPageIndex = 0,
-    altImg,
+    errorPlh,
     onPageChanged = noop,
     onViewerHideListener = noop,
     restDoms = [],
@@ -123,7 +123,7 @@ const initParams = (imgList, options, screenRotation, cachedCurrPage) => {
     imgMoveFactor = 1.5,
     imgMinScale = 1,
     imgMaxScale = 2,
-    limit = 11,
+    limit = 5,
     zIndex = null,
     viewerBg = null,
   } = wrapOptions
@@ -135,7 +135,7 @@ const initParams = (imgList, options, screenRotation, cachedCurrPage) => {
     options: { 
       limit, 
       defaultPageIndex: screenRotation ? cachedCurrPage : defaultPageIndex, 
-      altImg, 
+      errorPlh, 
       onPageChanged, 
       onViewerHideListener, 
       restDoms, 
@@ -295,22 +295,22 @@ const handleImgDoms = () => {
   const lastIndex = imgList.length - 1
   const { limit } = viewerData.options
   if(limit >= imgList.length) {
-    imgList.forEach((imgUrl, index) => {
-      docfrag.appendChild(appendSingleViewer(imgUrl, index))
+    imgList.forEach((imgObj, index) => {
+      docfrag.appendChild(appendSingleViewer(imgObj, index))
     })
   } else {
     const plDom = createImgPl()
-    imgList.forEach((imgUrl, index) => {
+    imgList.forEach((imgObj, index) => {
       if(currPage === 0) {
         if(index < limit) {
-          docfrag.appendChild(appendSingleViewer(imgUrl, index))
+          docfrag.appendChild(appendSingleViewer(imgObj, index))
         } 
         else {
           docfrag.appendChild(plDom.cloneNode())
         }
       } else if(currPage === lastIndex) {
         if(index > lastIndex - limit) {
-          docfrag.appendChild(appendSingleViewer(imgUrl, index))
+          docfrag.appendChild(appendSingleViewer(imgObj, index))
         } 
         else {
           docfrag.appendChild(plDom.cloneNode())
@@ -318,7 +318,7 @@ const handleImgDoms = () => {
       } else {
         const halfCount = Math.floor(limit / 2)
         if(index === currPage || (index >= currPage - halfCount && index <= currPage + halfCount)) {
-          docfrag.appendChild(appendSingleViewer(imgUrl, index))
+          docfrag.appendChild(appendSingleViewer(imgObj, index))
         } 
         else {
           docfrag.appendChild(plDom.cloneNode())
@@ -437,17 +437,17 @@ const img_onload = (imgDom, w, h, url) => {
 const img_onerror = (imgContainerDom, imgDom, loadingDom, error) => {
   if(error) {
     const {
-      altImg
+      errorPlh
     } = viewerData.options
-    if(altImg) {
+    if(errorPlh) {
       const successListener = function(w, h) {
-        img_onload(imgDom, w, h, altImg)
+        img_onload(imgDom, w, h, errorPlh)
       }
       const errorListener = function() {
         imgContainerDom.removeChild(loadingDom)
       }
-      imageLoaded.call(null, altImg, successListener, errorListener)
-      imgDom.src = altImg
+      imageLoaded.call(null, errorPlh, successListener, errorListener)
+      imgDom.src = errorPlh
     } else {
       imgContainerDom.removeChild(loadingDom)
     }
@@ -456,7 +456,7 @@ const img_onerror = (imgContainerDom, imgDom, loadingDom, error) => {
   }
 }
 
-const appendSingleViewer = (imgUrl, index) => {
+const appendSingleViewer = (imgObj, index) => {
   const imgContainerDom = document.createElement('div')
   imgContainerDom.setAttribute('class', VIEWER_SINGLE_IMAGE_CONTAINER)
   imgContainerDom.style.width = window.innerWidth + 'px'
@@ -468,12 +468,13 @@ const appendSingleViewer = (imgUrl, index) => {
   const imgDom = document.createElement('img')
   imgDom.setAttribute('id', genImgId(index))
   imgDom.setAttribute('src', IMG_EMPTY)
+  imgDom.setAttribute('alt', imgObj.alt || '')
   imgDom.style.width = window.innerWidth+'px'
   imgDom.style.height = window.innerWidth+'px'
   imgContainerDom.appendChild(imgDom)
 
-  imageLoaded.call(null, imgUrl, function(w, h) {
-    img_onload(imgDom, w, h, imgUrl)
+  imageLoaded.call(null, imgObj.src, function(w, h) {
+    img_onload(imgDom, w, h, imgObj.src)
   }, function(error) {
     img_onerror(imgContainerDom, imgDom, loadingDom, error)
   })
