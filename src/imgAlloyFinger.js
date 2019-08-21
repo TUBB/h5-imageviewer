@@ -3,11 +3,11 @@ import To from './utils/to'
 import Transform from './utils/transform'
 import ease from './utils/ease'
 
-function noop() {}
+function noop () {}
 
 const imgAlloyFinger = (el, options) => {
   const {
-    pressMoveListener = noop, 
+    pressMoveListener = noop,
     touchEndListener = noop,
     singleTapListener = noop,
     swipeListener = noop,
@@ -15,7 +15,7 @@ const imgAlloyFinger = (el, options) => {
     multipointEndListener = noop,
     multipointStartListener = noop,
     rotateListener = noop,
-    pinchListener = noop,
+    pinchListener = noop
   } = options
   Transform(el)
   let initScale = 1
@@ -53,7 +53,7 @@ const imgAlloyFinger = (el, options) => {
       To.stopAll()
       doubleTapListener(evt)
     },
-    touchEnd: function(evt) {
+    touchEnd: function (evt) {
       evt.preventDefault()
       evt.stopPropagation()
       touchEndListener(evt)
@@ -62,12 +62,12 @@ const imgAlloyFinger = (el, options) => {
         disableSingleTab = false
       }, 500)
     },
-    swipe: function(evt) {
+    swipe: function (evt) {
       disableSingleTab = true
       swipeListener(evt)
     },
-    singleTap: function() {
-      if(!disableSingleTab) {
+    singleTap: function () {
+      if (!disableSingleTab) {
         singleTapListener()
       }
     }
@@ -76,44 +76,44 @@ const imgAlloyFinger = (el, options) => {
   return alloyFinger
 }
 
-export function triggerPointEnd(dom, imgMinScale, imgMaxScale) {
+export function triggerPointEnd (dom, imgMinScale, imgMaxScale) {
   if (dom.scaleX < imgMinScale) {
-    new To(dom, "scaleX", imgMinScale, 500, ease)
-    new To(dom, "scaleY", imgMinScale, 500, ease)
-    new To(dom, "translateX", 0, 500, ease)
-    new To(dom, "translateY", 0, 500, ease)
+    new To(dom, 'scaleX', imgMinScale, 500, ease)
+    new To(dom, 'scaleY', imgMinScale, 500, ease)
+    new To(dom, 'translateX', 0, 500, ease)
+    new To(dom, 'translateY', 0, 500, ease)
   }
   if (dom.scaleX > imgMaxScale) {
-    new To(dom, "scaleX", imgMaxScale, 500, ease)
-    new To(dom, "scaleY", imgMaxScale, 500, ease)
-    new To(dom, "translateX", 0, 500, ease)
-    new To(dom, "translateY", 0, 500, ease)
+    new To(dom, 'scaleX', imgMaxScale, 500, ease)
+    new To(dom, 'scaleY', imgMaxScale, 500, ease)
+    new To(dom, 'translateX', 0, 500, ease)
+    new To(dom, 'translateY', 0, 500, ease)
   }
 }
 
-export function triggerRotateEnd(dom) {
+export function triggerRotateEnd (dom) {
   let rotation = dom.rotateZ % 360
   if (rotation < 0) rotation = 360 + rotation
-  dom.rotateZ=rotation
+  dom.rotateZ = rotation
   if (rotation > 0 && rotation < 45) {
-    new To(dom, "rotateZ", 0, 500, ease)
+    new To(dom, 'rotateZ', 0, 500, ease)
   } else if (rotation >= 315) {
-    new To(dom, "rotateZ", 360, 500, ease)
+    new To(dom, 'rotateZ', 360, 500, ease)
   } else if (rotation >= 45 && rotation < 135) {
-    new To(dom, "rotateZ", 90, 500, ease)
+    new To(dom, 'rotateZ', 90, 500, ease)
   } else if (rotation >= 135 && rotation < 225) {
-    new To(dom, "rotateZ", 180, 500, ease)
+    new To(dom, 'rotateZ', 180, 500, ease)
   } else if (rotation >= 225 && rotation < 315) {
-    new To(dom, "rotateZ", 270, 500, ease)
+    new To(dom, 'rotateZ', 270, 500, ease)
   }
 }
 
-export function triggerDoubleTab(dom, evt, imgMinScale, imgMaxScale) {
+export function triggerDoubleTab (dom, evt, imgMinScale, imgMaxScale) {
   if (dom.scaleX >= imgMaxScale) {
-    new To(dom, "scaleX", imgMinScale, 500, ease)
-    new To(dom, "scaleY", imgMinScale, 500, ease)
-    new To(dom, "translateX", 0, 500, ease)
-    new To(dom, "translateY", 0, 500, ease)
+    new To(dom, 'scaleX', imgMinScale, 500, ease)
+    new To(dom, 'scaleY', imgMinScale, 500, ease)
+    new To(dom, 'translateX', 0, 500, ease)
+    new To(dom, 'translateY', 0, 500, ease)
   } else {
     const { pageX, pageY } = evt.changedTouches[0]
     const box = dom.getBoundingClientRect()
@@ -121,22 +121,22 @@ export function triggerDoubleTab(dom, evt, imgMinScale, imgMaxScale) {
     const leftX = getImgDomLeftX(dom)
     const y = box.height - (pageY - topY) * 2 - (box.height / 2 - (pageY - topY))
     const x = box.width - (pageX - leftX) * 2 - (box.width / 2 - (pageX - leftX))
-    new To(dom, "scaleX", imgMaxScale, 500, ease)
-    new To(dom, "scaleY", imgMaxScale, 500, ease)
-    new To(dom, "translateX", x, 500, ease)
-    new To(dom, "translateY", y, 500, ease)
+    new To(dom, 'scaleX', imgMaxScale, 500, ease)
+    new To(dom, 'scaleY', imgMaxScale, 500, ease)
+    new To(dom, 'translateX', x, 500, ease)
+    new To(dom, 'translateY', y, 500, ease)
   }
 }
 
-function getImgDomTopY(dom) {
+function getImgDomTopY (dom) {
   const { translateY } = dom
   const box = dom.getBoundingClientRect()
   const topY = (window.innerHeight - box.height) / 2 + translateY
-  if(box.height > window.innerHeight) {
-    if(translateY > 0) {
-      return topY  + (box.height - window.innerHeight) / 2
-    } else if(translateY < 0) {
-      return topY  - (box.height - window.innerHeight) / 2
+  if (box.height > window.innerHeight) {
+    if (translateY > 0) {
+      return topY + (box.height - window.innerHeight) / 2
+    } else if (translateY < 0) {
+      return topY - (box.height - window.innerHeight) / 2
     } else {
       return topY
     }
@@ -145,15 +145,15 @@ function getImgDomTopY(dom) {
   }
 }
 
-function getImgDomLeftX(dom) {
+function getImgDomLeftX (dom) {
   const { translateX } = dom
   const box = dom.getBoundingClientRect()
   const leftX = (window.innerWidth - box.width) / 2 + translateX
-  if(box.width > window.innerWidth) {
-    if(translateX > 0) {
-      return leftX  + (box.width - window.innerWidth) / 2
-    } else if(translateX < 0) {
-      return leftX  - (box.width - window.innerWidth) / 2
+  if (box.width > window.innerWidth) {
+    if (translateX > 0) {
+      return leftX + (box.width - window.innerWidth) / 2
+    } else if (translateX < 0) {
+      return leftX - (box.width - window.innerWidth) / 2
     } else {
       return leftX
     }

@@ -1,17 +1,20 @@
 {
   "name": "h5-imageviewer",
-  "version": "0.6.0",
+  "version": "0.6.4",
   "description": "h5 imageviewer for mobile platform, support all web frameworks",
   "main": "dist/bundle.js",
   "files": [
-    "dist"
+    "dist",
+    "src/index.d.ts"
   ],
+  "types": "./src/index.d.ts", 
   "scripts": {
     "build": "webpack --config webpack.pro.js",
     "preview": "webpack --config webpack.preview.js",
     "watch": "webpack --watch",
     "dev": "webpack-dev-server --config webpack.dev.js --disableHostCheck=true",
-    "appdev": "webpack-dev-server --config webpack.dev.app.js --disableHostCheck=true"
+    "appdev": "webpack-dev-server --config webpack.dev.app.js --disableHostCheck=true",
+    "test": "standard"
   },
   "dependencies": {
     "alloyfinger": "^0.1.16"
@@ -52,6 +55,13 @@
     "webpack-cli": "^3.3.6",
     "webpack-dev-server": "^3.7.2",
     "webpack-node-externals": "^1.7.2"
+  },
+  "standard": {
+    "ignore": [
+      "/dist/",
+      "/src/example/"
+    ],
+    "globals": [ "Image" ]
   },
   "repository": {
     "type": "git",

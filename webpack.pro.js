@@ -1,7 +1,7 @@
 const path = require('path')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
-const {CleanWebpackPlugin} = require('clean-webpack-plugin')
-const nodeExternals = require('webpack-node-externals');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin')
+const nodeExternals = require('webpack-node-externals')
 
 module.exports = {
   mode: 'production',
@@ -34,11 +34,11 @@ module.exports = {
             // css3前缀自动补全
             loader: 'postcss-loader',
             options: {
-                plugins: () => [
-                  require('autoprefixer')({})
-                ]
+              plugins: () => [
+                require('autoprefixer')({})
+              ]
             }
-          },
+          }
         ]
       },
       {
@@ -49,7 +49,7 @@ module.exports = {
             options: {
               limit: 10240,
               // 文件内容hash
-              name: "[name]_[hash:8].[ext]"
+              name: '[name]_[hash:8].[ext]'
             }
           }
         ]
@@ -63,7 +63,7 @@ module.exports = {
     new OptimizeCSSAssetsPlugin({
       assetNameRegExp: /\.css$/g,
       cssProcessor: require('cssnano')
-    }),
+    })
   ],
   devtool: 'source-map'
 }

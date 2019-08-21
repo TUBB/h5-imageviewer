@@ -3,7 +3,7 @@ import imageLoaded from './utils/image_loaded'
 import imgAlloyFinger, {
   triggerDoubleTab,
   triggerPointEnd,
-  triggerRotateEnd,
+  triggerRotateEnd
 } from './imgAlloyFinger'
 import AlloyFinger from 'alloyfinger'
 import orit from './utils/orientation'
@@ -21,14 +21,14 @@ let viewerData = null
 let alloyFinger = null
 let containerAlloyFinger = null
 
-function noop() {}
+function noop () {}
 
 export const showViewer = (imgObj, options) => {
   if (!imgObj || !imgObj.src) return
   hideViewer(false)
   scrollThrough(true)
   let wrapOptions = {}
-  if(options) wrapOptions = {...options}
+  if (options) wrapOptions = { ...options }
   const {
     errorPlh,
     onViewerHideListener = noop,
@@ -37,7 +37,7 @@ export const showViewer = (imgObj, options) => {
     imgMinScale = 1,
     imgMaxScale = 2,
     zIndex = null,
-    viewerBg = null,
+    viewerBg = null
   } = wrapOptions
   viewerData = { imgObj, options: { errorPlh, onViewerHideListener, restDoms, imgMoveFactor, imgMinScale, imgMaxScale, zIndex, viewerBg } }
   orientation = orit.phoneOrientation()
@@ -49,21 +49,21 @@ export const showViewer = (imgObj, options) => {
 }
 
 export const hideViewer = (notifyUser = true) => {
-  if(notifyUser) {
+  if (notifyUser) {
     viewerData && viewerData.options.onViewerHideListener()
   }
-  if(viewerData) {
+  if (viewerData) {
     scrollThrough(false)
     removeViewerContainer()
   }
 }
 
 const handleRestDoms = () => {
-  const {restDoms} = viewerData.options
-  if(restDoms.length > 0) {
+  const { restDoms } = viewerData.options
+  if (restDoms.length > 0) {
     let docfrag = document.createDocumentFragment()
     restDoms.forEach(additionDom => {
-      if(additionDom.nodeType === 1) {
+      if (additionDom.nodeType === 1) {
         docfrag.appendChild(additionDom)
       } else {
         console.warn('Ignore invalid dom', additionDom)
@@ -91,7 +91,7 @@ const appendSingleViewer = () => {
 
   imgDom = document.createElement('img')
   imgDom.setAttribute('id', VIEWER_SINGLE_IMAGE_ID)
-  
+
   imgDom.setAttribute('src', imgObj.src)
   imgDom.setAttribute('alt', imgObj.alt || '')
   docfrag.appendChild(imgDom)
@@ -99,7 +99,7 @@ const appendSingleViewer = () => {
   imgDom.addEventListener('click', imgClickListener)
   const resetImgDom = (w, h) => {
     let imgWidth = 0
-    if(w > window.innerWidth) {
+    if (w > window.innerWidth) {
       imgWidth = window.innerWidth
     } else {
       imgWidth = w
@@ -110,9 +110,9 @@ const appendSingleViewer = () => {
   imageLoaded(imgObj.src, (w, h) => {
     resetImgDom(w, h)
   }, error => {
-    if(error) {
+    if (error) {
       containerDom.removeChild(imgDom)
-      if(errorPlh) {
+      if (errorPlh) {
         imageLoaded(errorPlh, (w, h) => {
           containerDom.appendChild(imgDom)
           imgDom.src = errorPlh
@@ -129,8 +129,8 @@ const appendSingleViewer = () => {
   })
   alloyFinger = imgAlloyFinger(imgDom, {
     multipointStartListener: () => imgDom.scaleX,
-    rotateListener: (evt) => imgDom.rotateZ += evt.angle,
-    pinchListener: (evt, initScale) => imgDom.scaleX = imgDom.scaleY = initScale * evt.zoom,
+    rotateListener: (evt) => { imgDom.rotateZ += evt.angle },
+    pinchListener: (evt, initScale) => { imgDom.scaleX = imgDom.scaleY = initScale * evt.zoom },
     pressMoveListener: evt => {
       imgDom.translateX += evt.deltaX * imgMoveFactor
       imgDom.translateY += evt.deltaY * imgMoveFactor
@@ -156,17 +156,17 @@ const appendViewerContainer = () => {
     containerDom = document.createElement('div')
     containerDom.setAttribute('id', VIEWER_CONTAINER_ID)
     const { zIndex, viewerBg } = viewerData.options
-    if(zIndex !== null) {
+    if (zIndex !== null) {
       containerDom.style['z-index'] = zIndex
     }
-    if(viewerBg !== null) {
+    if (viewerBg !== null) {
       containerDom.style.background = viewerBg
     }
     containerDom.addEventListener('click', viewerContainerClickListener)
     document.body.appendChild(containerDom)
     Transform(containerDom)
     containerAlloyFinger = new AlloyFinger(containerDom, {
-      pressMove: function(evt) {
+      pressMove: function (evt) {
         alloyFinger.pressMoveListener(evt)
         evt.preventDefault()
         evt.stopPropagation()
@@ -196,12 +196,12 @@ const removeViewerContainer = () => {
   loadingDom = null
   viewerData = null
   orientation = orit.PORTRAIT
-  if(alloyFinger) {
+  if (alloyFinger) {
     alloyFinger.destroy()
     alloyFinger.pressMoveListener = null
     alloyFinger = null
   }
-  if(containerAlloyFinger) {
+  if (containerAlloyFinger) {
     containerAlloyFinger.destroy()
     containerAlloyFinger = null
   }
@@ -210,7 +210,7 @@ const removeViewerContainer = () => {
 const userOrientationListener = () => {
   const newOrientation = orit.phoneOrientation()
   // orientation changed
-  if(newOrientation !== orientation && viewerData) { 
+  if (newOrientation !== orientation && viewerData) {
     // window.innerWidth and innerHeight changed not immediately
     setTimeout(() => {
       showViewer(viewerData.imgObj, viewerData.options)

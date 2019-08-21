@@ -9,12 +9,11 @@ import img_uof from '../assets/uof.jpg'
 import errorPlh from '../assets/img_loading_error.png'
 
 class Example extends React.Component {
-
-  onShowImgsClick() {
+  onShowImgsClick () {
     const imgs = [img_uof, img_cover, 9, img_uof, img_cover, img_timg, img_uof].map((url, index) => {
-      return {src: url, alt: index}
+      return { src: url, alt: index }
     })
-    viewer.showImgListViewer(imgs, { 
+    viewer.showImgListViewer(imgs, {
       onPageChanged: pageIndex => {
         console.log('onPageChanged', pageIndex)
       },
@@ -23,15 +22,15 @@ class Example extends React.Component {
       },
       errorPlh,
       defaultPageIndex: 1,
-      limit: 3, 
+      limit: 3
     })
     // setTimeout(() => {
     //   // go to the page
     //   viewer.setCurrentPage(0)
     // }, 5000)
-  } 
+  }
 
-  onShowImgsClickWithDoms() {
+  onShowImgsClickWithDoms () {
     const el = document.createElement('img')
     el.src = img_close
     el.className = 'btnClose'
@@ -50,12 +49,12 @@ class Example extends React.Component {
       e.stopPropagation()
       viewer.hideImgListViewer()
     })
-    viewer.showImgListViewer([{src: img_cover}, {src: img_uof}, {src: img_timg}], {
+    viewer.showImgListViewer([{ src: img_cover }, { src: img_uof }, { src: img_timg }], {
       defaultPageIndex: 1,
       onPageChanged: pageIndex => {
         console.log(pageIndex)
         dotDoms.forEach((dotDom, index) => {
-          if(pageIndex === index) {
+          if (pageIndex === index) {
             dotDom.className = 'dot dotSel'
           } else {
             dotDom.className = 'dot'
@@ -68,7 +67,7 @@ class Example extends React.Component {
     })
   }
 
-  onShowImgsXXXXL() {
+  onShowImgsXXXXL () {
     const imgs = []
     for (let index = 0; index < 999; index++) {
       imgs.push(index % 2 === 0 ? { src: img_cover } : { src: img_timg })
@@ -79,12 +78,12 @@ class Example extends React.Component {
     })
   }
 
-  onShowClick() {
+  onShowClick () {
     viewer.showViewer(
-      {  
+      {
         src: img_cover,
         alt: 'beauty door'
-      }, 
+      },
       {
         onViewerHideListener: () => {
           console.log('image viewer hide')
@@ -96,7 +95,7 @@ class Example extends React.Component {
     )
   }
 
-  onShowClickWithDoms() {
+  onShowClickWithDoms () {
     const el = document.createElement('img')
     el.src = img_close
     el.className = 'btnClose'
@@ -106,15 +105,15 @@ class Example extends React.Component {
     })
     viewer.showViewer(
       {
-        src: img_uof,
-      }, 
+        src: img_uof
+      },
       {
-        restDoms: [el],
+        restDoms: [el]
       }
     )
   }
 
-  render() {
+  render () {
     return (
       <div className='example'>
         <button className='btnShow' onClick={this.onShowClick}>Show image</button>

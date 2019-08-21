@@ -1,9 +1,9 @@
 const path = require('path')
 const webpack = require('webpack')
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
-const  OpenBrowserPlugin = require('open-browser-webpack-plugin');
-const CopyPlugin = require('copy-webpack-plugin');
+const OpenBrowserPlugin = require('open-browser-webpack-plugin')
+const CopyPlugin = require('copy-webpack-plugin')
 
 module.exports = {
   mode: 'development',
@@ -12,7 +12,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js',
+    filename: '[name].js'
   },
   module: {
     rules: [
@@ -37,11 +37,11 @@ module.exports = {
             // css3前缀自动补全
             loader: 'postcss-loader',
             options: {
-                plugins: () => [
-                  require('autoprefixer')({})
-                ]
+              plugins: () => [
+                require('autoprefixer')({})
+              ]
             }
-          },
+          }
         ]
       },
       {
@@ -65,17 +65,17 @@ module.exports = {
       filename: 'example.html',
       inject: true,
       minify: {
-          html5: true,
-          collapseWhitespace: true,
-          preserveLineBreaks: false,
-          minifyCSS: true,
-          minifyJS: true,
-          removeComments: false
+        html5: true,
+        collapseWhitespace: true,
+        preserveLineBreaks: false,
+        minifyCSS: true,
+        minifyJS: true,
+        removeComments: false
       }
     }),
     new OpenBrowserPlugin(
-      { 
-          url: 'http://localhost:8080/example.html' 
+      {
+        url: 'http://localhost:8080/example.html'
       }
     ),
     new CopyPlugin([

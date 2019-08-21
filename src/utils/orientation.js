@@ -2,7 +2,7 @@ const PORTRAIT = 'portrait'
 const LANDSCAPE = 'landscape'
 
 const phoneOrientation = () => {
-  if(window.orientation == 180 || window.orientation == 0) {
+  if (window.orientation === 180 || window.orientation === 0) {
     return PORTRAIT
   } else {
     return LANDSCAPE
@@ -10,11 +10,11 @@ const phoneOrientation = () => {
 }
 
 const addOrientationChangeListener = (listener) => {
-  window.addEventListener("onorientationchange" in window ? "orientationchange" : "resize", listener)
+  window.addEventListener('onorientationchange' in window ? 'orientationchange' : 'resize', listener)
 }
 
 const removeOrientationChangeListener = (listener) => {
-  window.removeEventListener("onorientationchange" in window ? "orientationchange" : "resize", listener)
+  window.removeEventListener('onorientationchange' in window ? 'orientationchange' : 'resize', listener)
 }
 
 export default {

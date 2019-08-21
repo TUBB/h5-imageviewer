@@ -1,14 +1,14 @@
-function getScrollTop() {
+function getScrollTop () {
   return document.body.scrollTop || document.documentElement.scrollTop
 }
-function getScrollLeft() {
+function getScrollLeft () {
   return document.body.scrollLeft || document.documentElement.scrollLeft
 }
-const toggleForbidScrollThrough = (function toggleForbidScrollThrough() {
+const toggleForbidScrollThrough = (function toggleForbidScrollThrough () {
   let scrollTop
   let scrollLeft
   const bodyPosition = document.body.style.position || 'static'
-  return function toggleForbidScrollThroughInner(isForbide) {
+  return function toggleForbidScrollThroughInner (isForbide) {
     if (isForbide) {
       scrollTop = getScrollTop()
       scrollLeft = getScrollLeft()

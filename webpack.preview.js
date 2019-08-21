@@ -1,5 +1,5 @@
 const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 
@@ -9,7 +9,7 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, 'preview'),
     // chunk hash, 不同chunk会生成不同的hash
-    filename: '[name]_[hash:8].js',
+    filename: '[name]_[hash:8].js'
   },
   module: {
     rules: [
@@ -34,11 +34,11 @@ module.exports = {
             // css3前缀自动补全
             loader: 'postcss-loader',
             options: {
-                plugins: () => [
-                  require('autoprefixer')({})
-                ]
+              plugins: () => [
+                require('autoprefixer')({})
+              ]
             }
-          },
+          }
         ]
       },
       {
@@ -49,7 +49,7 @@ module.exports = {
             options: {
               limit: 10240,
               // 文件内容hash
-              name: "[name]_[hash:8].[ext]"
+              name: '[name]_[hash:8].[ext]'
             }
           }
         ]
@@ -68,13 +68,13 @@ module.exports = {
       filename: 'example.html',
       inject: true,
       minify: {
-          html5: true,
-          collapseWhitespace: true,
-          preserveLineBreaks: false,
-          minifyCSS: true,
-          minifyJS: true,
-          removeComments: false
+        html5: true,
+        collapseWhitespace: true,
+        preserveLineBreaks: false,
+        minifyCSS: true,
+        minifyJS: true,
+        removeComments: false
       }
-    }),
+    })
   ]
 }
