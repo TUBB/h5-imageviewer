@@ -11,6 +11,7 @@ interface Options {
   imgMaxScale?: number
   zIndex?: number,
   viewerBg?: string,
+  clickClosable?: boolean
 }
 interface ImgListOptions extends Options {
   defaultPageIndex?: number

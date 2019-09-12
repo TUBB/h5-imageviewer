@@ -125,7 +125,8 @@ const initParams = (imgList, options, screenRotation, cachedCurrPage) => {
     imgMaxScale = 2,
     limit = 5,
     zIndex = null,
-    viewerBg = null
+    viewerBg = null,
+    clickClosable = true
   } = wrapOptions
   if (!/^[0-9]+$/.test(limit) || limit < 3 || limit % 2 !== 1) {
     throw Error('limit must be odd number and greater than 3')
@@ -145,7 +146,8 @@ const initParams = (imgList, options, screenRotation, cachedCurrPage) => {
       imgMinScale,
       imgMaxScale,
       zIndex,
-      viewerBg
+      viewerBg,
+      clickClosable
     }
   }
   if (viewerData.options.defaultPageIndex < 0 ||
@@ -160,7 +162,8 @@ const registerViewerAlloyFinger = () => {
     imgMoveFactor,
     pageThreshold,
     imgMinScale,
-    imgMaxScale
+    imgMaxScale,
+    clickClosable
   } = viewerData.options
   const pageCount = viewerData.imgList.length
   viewerAlloyFinger = imgAlloyFinger(containerDom, {
@@ -251,7 +254,7 @@ const registerViewerAlloyFinger = () => {
       }
     },
     singleTapListener: () => {
-      hideImgListViewer()
+      if(clickClosable) hideImgListViewer()
     },
     doubleTapListener: evt => {
       triggerDoubleTab(getCurrImgDom(), evt, imgMinScale, imgMaxScale)
@@ -262,6 +265,7 @@ const registerViewerAlloyFinger = () => {
     multipointStartListener: () => getCurrImgDom().scaleX,
     pinchListener: (evt, initScale) => { getCurrImgDom().scaleX = getCurrImgDom().scaleY = initScale * evt.zoom }
   })
+  containerDom.style.transform = 'none'
 }
 
 const handleOrientationChange = () => {
@@ -494,7 +498,6 @@ const appendViewerContainer = () => {
     if (viewerBg !== null) {
       containerDom.style.background = viewerBg
     }
-    containerDom.addEventListener('click', viewerContainerClickListener)
     document.body.appendChild(containerDom)
     registerViewerAlloyFinger()
   }
@@ -516,13 +519,7 @@ const appendViewerPanel = () => {
   }
 }
 
-const viewerContainerClickListener = e => {
-  e.stopPropagation()
-  hideImgListViewer()
-}
-
 const removeViewerContainer = () => {
-  containerDom && containerDom.removeEventListener('click', viewerContainerClickListener)
   containerDom && document.body.removeChild(containerDom)
   orit.removeOrientationChangeListener(userOrientationListener)
   orientation = orit.PORTRAIT

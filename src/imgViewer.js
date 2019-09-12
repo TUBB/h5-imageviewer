@@ -37,9 +37,10 @@ export const showViewer = (imgObj, options) => {
     imgMinScale = 1,
     imgMaxScale = 2,
     zIndex = null,
-    viewerBg = null
+    viewerBg = null,
+    clickClosable = true
   } = wrapOptions
-  viewerData = { imgObj, options: { errorPlh, onViewerHideListener, restDoms, imgMoveFactor, imgMinScale, imgMaxScale, zIndex, viewerBg } }
+  viewerData = { imgObj, options: { errorPlh, onViewerHideListener, restDoms, imgMoveFactor, imgMinScale, imgMaxScale, zIndex, viewerBg, clickClosable } }
   orientation = orit.phoneOrientation()
   orit.removeOrientationChangeListener(userOrientationListener)
   orit.addOrientationChangeListener(userOrientationListener)
@@ -81,7 +82,8 @@ const appendSingleViewer = () => {
       errorPlh,
       imgMoveFactor,
       imgMinScale,
-      imgMaxScale
+      imgMaxScale,
+      clickClosable
     }
   } = viewerData
   let docfrag = document.createDocumentFragment()
@@ -136,7 +138,7 @@ const appendSingleViewer = () => {
       imgDom.translateY += evt.deltaY * imgMoveFactor
     },
     singleTapListener: () => {
-      hideViewer()
+      if(clickClosable) hideViewer()
     },
     doubleTapListener: evt => {
       triggerDoubleTab(imgDom, evt, imgMinScale, imgMaxScale)
@@ -172,6 +174,7 @@ const appendViewerContainer = () => {
         evt.stopPropagation()
       }
     })
+    containerDom.style.transform = 'none'
   }
 }
 
@@ -181,9 +184,8 @@ const imgClickListener = e => {
 }
 
 const viewerContainerClickListener = e => {
-  hideViewer()
   e.stopPropagation()
-  e.preventDefault()
+  if(viewerData.options.clickClosable) hideViewer()
 }
 
 const removeViewerContainer = () => {

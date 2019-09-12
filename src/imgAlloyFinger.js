@@ -54,7 +54,6 @@ const imgAlloyFinger = (el, options) => {
       doubleTapListener(evt)
     },
     touchEnd: function (evt) {
-      evt.preventDefault()
       evt.stopPropagation()
       touchEndListener(evt)
       // // singleTab delay 250, so we delay more. true ended for me!!!!

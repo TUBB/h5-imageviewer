@@ -33,8 +33,9 @@ class Example extends React.Component {
   onShowImgsClickWithDoms () {
     const el = document.createElement('img')
     el.src = img_close
+    el.alt = '地方'
     el.className = 'btnClose'
-
+    
     const indicator = document.createElement('div')
     indicator.className = 'indicator'
     const imgs = [img_cover, img_uof, img_timg]
@@ -47,12 +48,12 @@ class Example extends React.Component {
     })
     el.addEventListener('click', e => {
       e.stopPropagation()
+      e.preventDefault()
       viewer.hideImgListViewer()
     })
     viewer.showImgListViewer([{ src: img_cover }, { src: img_uof }, { src: img_timg }], {
       defaultPageIndex: 1,
       onPageChanged: pageIndex => {
-        console.log(pageIndex)
         dotDoms.forEach((dotDom, index) => {
           if (pageIndex === index) {
             dotDom.className = 'dot dotSel'
@@ -62,8 +63,8 @@ class Example extends React.Component {
         })
       },
       restDoms: [el, indicator],
-      zIndex: 10,
-      viewerBg: '#333333'
+      viewerBg: '#333333',
+      clickClosable: false
     })
   }
 
@@ -100,7 +101,6 @@ class Example extends React.Component {
     el.src = img_close
     el.className = 'btnClose'
     el.addEventListener('click', e => {
-      e.stopPropagation()
       viewer.hideViewer()
     })
     viewer.showViewer(
@@ -108,7 +108,8 @@ class Example extends React.Component {
         src: img_uof
       },
       {
-        restDoms: [el]
+        restDoms: [el],
+        clickClosable: false
       }
     )
   }

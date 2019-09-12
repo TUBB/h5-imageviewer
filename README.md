@@ -55,6 +55,7 @@ Please check [EXAMPLE](https://github.com/TUBB/h5-imageviewer/blob/master/src/ex
 | options.imgMaxScale | number | 2 | no | maximum scale of the image |
 | options.zIndex | number | 999 | no | the viewer `z-index` |
 | options.viewerBg | string | `#000000` | no | the viewer `background` |
+| options.clickClosable | boolean | `true` | no | hide the viewer if click |
 
 ### Show image list viewer(`viewer.showImgListViewer(imgObjList, options)`)
 | Property         |  Type   | Default | Required | Description                                                               |
@@ -73,6 +74,7 @@ Please check [EXAMPLE](https://github.com/TUBB/h5-imageviewer/blob/master/src/ex
 | options.limit | number | 5 | no | how many pages will be kept offscreen in an idle state |
 | options.pageThreshold | number | 0.1 | no | threshold of go to next or prev page (window.innerWidth * pageThreshold) |
 | options.pageDampingFactor | number | 0.9 | no | damping factor |
+| options.clickClosable | boolean | `true` | no | hide the viewer if click |
 
 # Dependencies
 * [AlloyFinger](https://github.com/AlloyTeam/AlloyFinger)
