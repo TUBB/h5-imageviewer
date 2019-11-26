@@ -2,7 +2,7 @@
 Image slider for mobile platform, supported React/Vue/AngularJS.
 
 # Features
-* Rotate、pinch、move、swipe and double tap scale the image.
+* Supported rotate、pinch、move、swipe、scale and double tap gestures.
 * Page turning.
 * Supported landscape and portrait screen.
 * Supported React/Vue/AngularJS.
@@ -62,6 +62,7 @@ Please check [EXAMPLE](https://github.com/TUBB/h5-imageviewer/blob/master/src/ex
 | :--------------- | :-----: | :-----: | :------: | :------------------------------------------------------------------------ |
 | imgObj.src | string | | yes | img src attr (base64 also supported) |
 | imgObj.alt | string | | no | img alt attr |
+| options.defaultPageIndex | number | 0 | no | default page index |
 | options.errorPlh | string | | no | placeholder when image onerror |
 | options.onViewerHideListener | function() | | no | listener for viewer hide |
 | options.restDoms | array | | no |  | the attach dom array |
