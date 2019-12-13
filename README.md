@@ -1,6 +1,10 @@
 # H5 image viewer
 [![Build Status](https://travis-ci.org/TUBB/h5-imageviewer.svg?branch=master)](https://travis-ci.org/TUBB/h5-imageviewer)
-Image slider for mobile platform, supported React/Vue/AngularJS.
+[![node](https://img.shields.io/badge/node->%3D10.3.0-brightgreen)](https://www.npmjs.com/package/h5-imageviewer) 
+[![npm](https://img.shields.io/badge/npm-v6.1.0-orange)](https://www.npmjs.com/package/h5-imageviewer)
+[![Maintainability](https://codeclimate.com/github/TUBB/h5-imageviewer/badges/gpa.svg)](https://codeclimate.com/github/TUBB/h5-imageviewer)
+
+> Image viewer for mobile browser, supported React/Vue/AngularJS.
 
 # Features
 * Supported rotate、pinch、move、swipe、scale and double tap gestures.
