@@ -23,6 +23,11 @@ let containerAlloyFinger = null
 
 function noop () {}
 
+/**
+ * Display image viewer
+ * @param {Object} imgObj img element attr
+ * @param {Object} options config options
+ */
 export const showViewer = (imgObj, options) => {
   if (!imgObj || !imgObj.src) return
   hideViewer(false)
@@ -49,11 +54,15 @@ export const showViewer = (imgObj, options) => {
   handleRestDoms()
 }
 
+/**
+ * Hide image viewer
+ * @param {Boolean} notifyUser options.onViewerHideListener call or not
+ */
 export const hideViewer = (notifyUser = true) => {
-  if (notifyUser) {
-    viewerData && viewerData.options.onViewerHideListener()
-  }
   if (viewerData) {
+    if (notifyUser) {
+      viewerData.options.onViewerHideListener()
+    }
     scrollThrough(false)
     removeViewerContainer()
   }

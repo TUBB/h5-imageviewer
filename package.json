@@ -7,7 +7,7 @@
     "dist",
     "src/index.d.ts"
   ],
-  "types": "./src/index.d.ts", 
+  "types": "./src/index.d.ts",
   "scripts": {
     "build": "webpack --config webpack.pro.js",
     "preview": "webpack --config webpack.preview.js",
@@ -61,7 +61,9 @@
       "/dist/",
       "/src/example/"
     ],
-    "globals": [ "Image" ]
+    "globals": [
+      "Image"
+    ]
   },
   "repository": {
     "type": "git",

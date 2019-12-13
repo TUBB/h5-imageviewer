@@ -25,12 +25,18 @@ let viewerAlloyFinger = null
 
 function noop () {}
 
-export const showImgListViewer = (imgList = [], options, screenRotation = false) => {
+/**
+ * Display image list viewer
+ * @param {Array} imgList image list
+ * @param {Object} options config options
+ * @param {Boolean} screenRotated device screen is rotated or not
+ */
+export const showImgListViewer = (imgList = [], options, screenRotated = false) => {
   if (!Array.isArray(imgList) || imgList.length <= 0) return
   const cachedCurrPage = currPage
   hideImgListViewer(false)
   scrollThrough(true)
-  initParams(imgList, options, screenRotation, cachedCurrPage)
+  initParams(imgList, options, screenRotated, cachedCurrPage)
   appendViewerContainer()
   appendViewerPanel()
   scrollToFixedPage(viewerData.options.defaultPageIndex)
@@ -39,25 +45,33 @@ export const showImgListViewer = (imgList = [], options, screenRotation = false)
   handleOrientationChange()
 }
 
+/**
+ * Hide image list viewer
+ * @param {Boolean} notifyUser options.onViewerHideListener call or not
+ */
 export const hideImgListViewer = (notifyUser = true) => {
-  if (notifyUser) {
-    viewerData && viewerData.options.onViewerHideListener()
-  }
   if (viewerData) {
+    if (notifyUser) {
+      viewerData.options.onViewerHideListener()
+    }
     scrollThrough(false)
     removeViewerContainer()
   }
 }
 
+/**
+ * Set viewer current page
+ * @param {Number} pageIndex page index, start with 0
+ */
 export const setCurrentPage = pageIndex => {
-  if (viewerData === null ||
-    pageIndex < 0 ||
-    pageIndex > viewerData.imgList.length - 1) {
+  if (viewerData === null 
+    || pageIndex < 0 
+    || pageIndex > viewerData.imgList.length - 1) {
     return
   }
   const { imgList, options: { limit } } = viewerData
   const lastIndex = imgList.length - 1
-  const updateDom = (page) => {
+  const updateDom = page => {
     const currNode = panelDom.childNodes[page]
     if (currNode && !currNode.hasAttribute('class')) {
       panelDom.replaceChild(appendSingleViewer(imgList[page], page), currNode)
@@ -277,7 +291,7 @@ const handleOrientationChange = () => {
 const userOrientationListener = () => {
   const newOrientation = orit.phoneOrientation()
   if (newOrientation !== orientation && viewerData) { // orientation changed
-    // window.innerWidth, innerHeight变更会有延迟
+    // window.innerWidth and window.innerHeight changed will delay
     setTimeout(() => {
       showImgListViewer(viewerData.imgList, viewerData.options, true)
     }, 300)
