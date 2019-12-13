@@ -1,4 +1,5 @@
 # H5 image viewer
+[![Build Status](https://travis-ci.org/TUBB/h5-imageviewer.svg?branch=master)](https://travis-ci.org/TUBB/h5-imageviewer)
 Image slider for mobile platform, supported React/Vue/AngularJS.
 
 # Features
