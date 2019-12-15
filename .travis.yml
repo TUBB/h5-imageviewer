@@ -11,5 +11,6 @@ notifications:
 node_js:
   - node
 script:
-  - npm run build
+  - npm run test && npm run build
 after_success:
+  - npm run coverage
