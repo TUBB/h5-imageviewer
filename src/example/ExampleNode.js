@@ -121,8 +121,8 @@ export default class ExampleNode extends React.Component {
         <button className='btnShow2' data-testid='btnShowImageList' onClick={this.onShowImgsClick}>Show images</button>
         <button className='btnShow2' data-testid='btnShowImageListWithDoms' onClick={this.onShowImgsClickWithDoms}>Show images with addition doms</button>
         <button className='btnShow2' data-testid='btnShowImageListWithBig' onClick={this.onShowImgsXXXXL}>Show images(a great number of images)</button>
-        <button className='btnShow2' data-testid='btnHideImage' onClick={viewer.hideViewer}>Hide image viewer</button>
-        <button className='btnShow2' data-testid='btnHideImageList' onClick={viewer.hideImgListViewer}>Hide image list viewer</button>
+        <button style={{display: 'none'}} className='btnShow2' data-testid='btnHideImage' onClick={viewer.hideViewer}>Hide image viewer</button>
+        <button style={{display: 'none'}} data-testid='btnHideImageList' onClick={viewer.hideImgListViewer}>Hide image list viewer</button>
       </div>
     )
   }

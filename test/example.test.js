@@ -2,6 +2,8 @@ import React from 'react';
 import {cleanup, fireEvent, render} from '@testing-library/react';
 import ExampleNode from '../src/example/ExampleNode';
 
+window.scrollTo = jest.fn();
+
 // automatically unmount and cleanup DOM after the test is finished.
 afterEach(cleanup);
 

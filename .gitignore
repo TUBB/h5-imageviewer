@@ -8,3 +8,4 @@ npm-debug.log
 webpack.dev.app.js
 src/apptest/
 .package-lock.json
+coverage/
