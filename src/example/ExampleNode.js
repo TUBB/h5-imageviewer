@@ -1,6 +1,6 @@
 import React from 'react'
 import './example.less'
-import viewer from '../index'
+import * as viewer from '../index'
 import img_cover from '../assets/cover.jpg'
 import img_close from '../assets/close.png'
 import img_timg from '../assets/timg.jpg'
@@ -23,10 +23,10 @@ export default class ExampleNode extends React.Component {
       defaultPageIndex: 1,
       limit: 3
     })
-    // setTimeout(() => {
-    //   // go to the page
-    //   viewer.setCurrentPage(0)
-    // }, 5000)
+    setTimeout(() => {
+      // go to the page
+      viewer.setCurrentPage(0)
+    }, 5000)
   }
 
   onShowImgsClickWithDoms () {

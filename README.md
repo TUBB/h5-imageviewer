@@ -31,14 +31,14 @@ npm i h5-imageviewer
 # Usage
 Show single image viewer
 ```js
-import viewer from 'h5-imageviewer'
+import * as viewer from '../index'
 viewer.showViewer(imgObj, options)
 // hide image viewer
 viewer.hideImgViewer()
 ```
 Show image list viewer
 ```js
-import viewer from 'h5-imageviewer'
+import * as viewer from '../index'
 viewer.showImgListViewer(imgObjList, options)
 // hide image list viewer
 viewer.hideImgListViewer()

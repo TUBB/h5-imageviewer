@@ -20,11 +20,31 @@ interface ImgListOptions extends Options {
   pageDampingFactor?: number
   limit?: number
 }
+interface ShowViewerFunc {
+  (imgObj: ImgObj, options?: Options): void
+}
+interface HideViewerFunc {
+  (notifyUser?: boolean): void
+}
+interface ShowImgListViewerFunc {
+  (imgObjList: Array<ImgObj>, options?: ImgListOptions): void
+}
+interface HideImgListViewerFunc {
+  (notifyUser?: boolean): void
+}
+interface SetCurrentPageFunc {
+  (pageIndex: number): void
+}
 declare const viewer: {
-  showViewer(imgObj: ImgObj, options?: Options): void
-  hideViewer(notifyUser?: boolean): void
-  showImgListViewer(imgObjList: Array<ImgObj>, options?: ImgListOptions): void
-  hideImgListViewer(notifyUser?: boolean): void
-  setCurrentPage(pageIndex: number): void
+  showViewer: ShowViewerFunc
+  hideViewer: HideViewerFunc
+  showImgListViewer: ShowImgListViewerFunc
+  hideImgListViewer: HideImgListViewerFunc
+  setCurrentPage: SetCurrentPageFunc
 }
 export default viewer
+export const showViewer: ShowViewerFunc
+export const hideViewer: HideViewerFunc
+export const showImgListViewer: ShowImgListViewerFunc
+export const hideImgListViewer: HideImgListViewerFunc
+export const setCurrentPage: SetCurrentPageFunc
