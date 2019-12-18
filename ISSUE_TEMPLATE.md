@@ -11,7 +11,6 @@ ISSUES MISSING IMPORTANT INFORMATION MAY BE CLOSED WITHOUT INVESTIGATION.
 [ ] Bug report  <!-- Please search GitHub for a similar issue or PR before submitting -->
 [ ] Feature request
 [ ] Documentation issue or request
-[ ] Support request => Please do not submit support request here, instead see https://github.com/angular/angular/blob/master/CONTRIBUTING.md#question
 </code></pre>
 
 ## Current behavior
@@ -28,8 +27,8 @@ For bug reports please provide the *STEPS TO REPRODUCE* and if possible a *MINIM
 https://stackblitz.com or similar (you can use this template as a starting point: https://stackblitz.com/fork/angular-gitter).
 -->
 
-## What is the motivation / use case for changing the behavior?
-<!-- Describe the motivation or the concrete use case. -->
+## What is the jest / use case for changing the behavior?
+<!-- Describe the jest or the concrete use case. -->
 
 
 ## Environment
