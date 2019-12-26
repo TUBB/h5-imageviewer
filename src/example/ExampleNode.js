@@ -1,6 +1,7 @@
 import React from 'react'
 import './example.less'
 import * as viewer from '../index'
+// import * as viewer from 'h5-imageviewer'
 import img_cover from '../assets/cover.jpg'
 import img_close from '../assets/close.png'
 import img_timg from '../assets/timg.jpg'
