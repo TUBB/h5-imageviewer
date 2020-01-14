@@ -274,7 +274,9 @@ const registerViewerAlloyFinger = () => {
       triggerDoubleTab(getCurrImgDom(), evt, imgMinScale, imgMaxScale)
     },
     multipointEndListener: () => {
-      triggerPointEnd(getCurrImgDom(), imgMinScale, imgMaxScale)
+      if (viewerData) {
+        triggerPointEnd(getCurrImgDom(), imgMinScale, imgMaxScale)
+      }
     },
     multipointStartListener: () => getCurrImgDom().scaleX,
     pinchListener: (evt, initScale) => { getCurrImgDom().scaleX = getCurrImgDom().scaleY = initScale * evt.zoom }
@@ -293,7 +295,9 @@ const userOrientationListener = () => {
   if (newOrientation !== orientation && viewerData) { // orientation changed
     // window.innerWidth and window.innerHeight changed will delay
     setTimeout(() => {
-      showImgListViewer(viewerData.imgList, viewerData.options, true)
+      if (viewerData) {
+        showImgListViewer(viewerData.imgList, viewerData.options, true)
+      }
     }, 300)
   }
 }
@@ -302,7 +306,9 @@ const scrollToFixedPage = (page) => {
   currPage = page
   setTimeout(() => {
     new To(panelDom, 'translateX', -currPage * window.innerWidth, 300, ease, () => {
-      viewerData.options.onPageChanged(currPage)
+      if (viewerData) {
+        viewerData.options.onPageChanged(currPage)
+      }
     })
   }, 300)
 }
@@ -346,6 +352,7 @@ const handleImgDoms = () => {
 }
 
 const replaceImgDom = (prevPage) => {
+  if (viewerData === null) return 
   const { imgList, options: { limit } } = viewerData
   const lastIndex = imgList.length - 1
   if (currPage === 0 ||
