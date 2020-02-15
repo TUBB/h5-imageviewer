@@ -304,13 +304,8 @@ const userOrientationListener = () => {
 
 const scrollToFixedPage = (page) => {
   currPage = page
-  setTimeout(() => {
-    new To(panelDom, 'translateX', -currPage * window.innerWidth, 300, ease, () => {
-      if (viewerData) {
-        viewerData.options.onPageChanged(currPage)
-      }
-    })
-  }, 300)
+  panelDom.translateX = -currPage * window.innerWidth
+  viewerData.options.onPageChanged(currPage)
 }
 
 const handleImgDoms = () => {
