@@ -76,6 +76,7 @@ const imgAlloyFinger = (el, options) => {
 }
 
 export function triggerPointEnd (dom, imgMinScale, imgMaxScale) {
+  if (!dom) return
   if (dom.scaleX < imgMinScale) {
     new To(dom, 'scaleX', imgMinScale, 500, ease)
     new To(dom, 'scaleY', imgMinScale, 500, ease)
@@ -91,6 +92,7 @@ export function triggerPointEnd (dom, imgMinScale, imgMaxScale) {
 }
 
 export function triggerRotateEnd (dom) {
+  if (!dom) return
   let rotation = dom.rotateZ % 360
   if (rotation < 0) rotation = 360 + rotation
   dom.rotateZ = rotation
@@ -108,6 +110,7 @@ export function triggerRotateEnd (dom) {
 }
 
 export function triggerDoubleTab (dom, evt, imgMinScale, imgMaxScale) {
+  if (!dom) return
   if (dom.scaleX >= imgMaxScale) {
     new To(dom, 'scaleX', imgMinScale, 500, ease)
     new To(dom, 'scaleY', imgMinScale, 500, ease)
@@ -128,6 +131,7 @@ export function triggerDoubleTab (dom, evt, imgMinScale, imgMaxScale) {
 }
 
 function getImgDomTopY (dom) {
+  if (!dom) return 0
   const { translateY } = dom
   const box = dom.getBoundingClientRect()
   const topY = (window.innerHeight - box.height) / 2 + translateY
@@ -145,6 +149,7 @@ function getImgDomTopY (dom) {
 }
 
 function getImgDomLeftX (dom) {
+  if (!dom) return 0
   const { translateX } = dom
   const box = dom.getBoundingClientRect()
   const leftX = (window.innerWidth - box.width) / 2 + translateX

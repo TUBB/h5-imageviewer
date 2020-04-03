@@ -202,8 +202,10 @@ const registerViewerAlloyFinger = () => {
       }
     },
     pressMoveListener: evt => {
+      const currImgDom = getCurrImgDom()
+      if (!evt || !currImgDom) return
       const currPageTranslateStart = currPage * window.innerWidth
-      const { scaleX, width, translateX } = getCurrImgDom()
+      const { scaleX, width, translateX } = currImgDom
       const { deltaX, deltaY } = evt
       const panelTranslateX = pageDampingFactor * deltaX + panelDom.translateX
       const realWidth = scaleX * width
@@ -223,7 +225,7 @@ const registerViewerAlloyFinger = () => {
                   panelDom.translateX = panelReturnDis
                 }
               } else {
-                getCurrImgDom().translateX = imgTranslateX
+                currImgDom.translateX = imgTranslateX
               }
             } else { // move to left
               if (Math.abs(panelDom.translateX) < currPageTranslateStart) {
@@ -234,7 +236,7 @@ const registerViewerAlloyFinger = () => {
                   panelDom.translateX = panelReturnDis
                 }
               } else {
-                getCurrImgDom().translateX = imgTranslateX
+                currImgDom.translateX = imgTranslateX
               }
             }
           } else {
@@ -242,7 +244,7 @@ const registerViewerAlloyFinger = () => {
           }
         }
       } else {
-        getCurrImgDom().translateY += deltaY * imgMoveFactor
+        currImgDom.translateY += deltaY * imgMoveFactor
       }
     },
     touchEndListener: () => {
@@ -278,8 +280,16 @@ const registerViewerAlloyFinger = () => {
         triggerPointEnd(getCurrImgDom(), imgMinScale, imgMaxScale)
       }
     },
-    multipointStartListener: () => getCurrImgDom().scaleX,
-    pinchListener: (evt, initScale) => { getCurrImgDom().scaleX = getCurrImgDom().scaleY = initScale * evt.zoom }
+    multipointStartListener: () => {
+      const dom = getCurrImgDom()
+      if (!dom) return 0
+      else return dom.scaleX
+    },
+    pinchListener: (evt, initScale) => {
+      const dom = getCurrImgDom()
+      if (!evt || !dom) return
+      dom.scaleX = dom.scaleY = initScale * evt.zoom 
+    }
   })
   containerDom.style.transform = 'none'
 }
@@ -359,14 +369,14 @@ const replaceImgDom = (prevPage) => {
   setTimeout(() => {
     const imgContainerDoms = panelDom.childNodes
     const currNode = imgContainerDoms[currPage]
-    if (!currNode.hasAttribute('class')) {
+    if (currNode && !currNode.hasAttribute('class')) {
       panelDom.replaceChild(appendSingleViewer(imgList[currPage], currPage), currNode)
     }
     const halfCount = Math.floor(limit / 2)
     if (currPage > prevPage) { // scrolled to next page
       const nextIndex = currPage + halfCount
       const nextNode = imgContainerDoms[nextIndex]
-      if (!nextNode.hasAttribute('class')) {
+      if (nextNode && !nextNode.hasAttribute('class')) {
         panelDom.replaceChild(appendSingleViewer(imgList[nextIndex], nextIndex), nextNode)
       }
       const ppIndex = currPage - halfCount - 1
@@ -377,7 +387,7 @@ const replaceImgDom = (prevPage) => {
     } else if (currPage < prevPage) { // scrolled to prev page
       const prevIndex = currPage - halfCount
       const prevNode = imgContainerDoms[prevIndex]
-      if (!prevNode.hasAttribute('class')) {
+      if (prevNode && !prevNode.hasAttribute('class')) {
         panelDom.replaceChild(appendSingleViewer(imgList[prevIndex], prevIndex), prevNode)
       }
       const nnIndex = prevPage + halfCount
