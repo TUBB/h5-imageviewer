@@ -1,6 +1,6 @@
 {
   "name": "h5-imageviewer",
-  "version": "0.7.1",
+  "version": "0.7.2",
   "description": "Image viewer for mobile browser, supported React/Vue/AngularJS.",
   "main": "dist/bundle.js",
   "files": [
