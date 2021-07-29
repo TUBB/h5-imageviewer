@@ -1,7 +1,7 @@
 {
   "name": "h5-imageviewer",
   "version": "0.7.1",
-  "description": "h5 imageviewer for mobile platform, support all web frameworks",
+  "description": "Image viewer for mobile browser, supported React/Vue/AngularJS.",
   "main": "dist/bundle.js",
   "files": [
     "dist",
@@ -88,14 +88,15 @@
   },
   "keywords": [
     "h5",
-    "mobile",
-    "image",
-    "viewer"
+    "slider",
+    "image viewer",
+    "dom"
   ],
   "author": "TUBB",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/TUBB/h5-imageviewer/issues"
+    "url": "https://github.com/TUBB/h5-imageviewer/issues",
+    "email": "tubgbg@gmail.com"
   },
   "homepage": "https://github.com/TUBB/h5-imageviewer#readme"
 }
