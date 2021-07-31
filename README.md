@@ -29,7 +29,8 @@ npm i h5-imageviewer
 ```
 
 Or get it from CDN:
-[https://unpkg.com/h5-imageviewer@0.7.4/umd/pobi-imageviewer.js](https://unpkg.com/h5-imageviewer@0.7.4/umd/pobi-imageviewer.js)
+
+[https://unpkg.com/h5-imageviewer@0.7.5/umd/h5-imageviewer.js](https://unpkg.com/h5-imageviewer@0.7.5/umd/h5-imageviewer.js)
 
 # Usage
 Show single image viewer
@@ -47,7 +48,7 @@ viewer.showImgListViewer(imgObjList, options)
 viewer.hideImgListViewer()
 ```
 
-Please check [EXAMPLE](https://github.com/TUBB/h5-imageviewer/blob/master/src/example/example.js) for detail.
+Please check [EXAMPLE1](https://github.com/TUBB/h5-imageviewer/blob/master/src/example/example.js) or [EXAMPLE2](https://github.com/TUBB/h5-imageviewer/tree/master/public/cdn-test.html) for detail.
 
 # Apis
 

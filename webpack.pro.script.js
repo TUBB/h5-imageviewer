@@ -9,10 +9,10 @@ module.exports = {
   entry: './src/index.js',
   output: {
     path: path.resolve(__dirname, 'umd'),
-    filename: "pobi-imageviewer.js",
+    filename: "h5-imageviewer.js",
     libraryExport: "default",
     libraryTarget: "umd",
-    library: "PobiImageViewer"
+    library: "H5ImageViewer"
   },
   module: {
     rules: [

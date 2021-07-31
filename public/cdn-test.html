@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">  
   <meta name="format-detection" content="telephone=no">
   <title>H5 mobile image viewer</title>
-  <script src="https://unpkg.com/h5-imageviewer@0.7.4/umd/pobi-imageviewer.js"></script>
+  <script src="https://unpkg.com/h5-imageviewer@0.7.5/umd/h5-imageviewer.js"></script>
   <script src="./vconsole.min.js"></script>
   <script>
     // init vConsole
     var vConsole = new VConsole();
     function showImage() {
-      PobiImageViewer.showViewer(
+      H5ImageViewer.showViewer(
         {src: 'http://localhost:8080/737a71084999bb9ee329f7afead08564.jpg'},
         {
           onPageChanged: pageIndex => {
@@ -21,7 +21,7 @@
       )
     }
     function showImageList() {
-      PobiImageViewer.showImgListViewer(
+      H5ImageViewer.showImgListViewer(
         [
           {src: 'http://localhost:8080/737a71084999bb9ee329f7afead08564.jpg'},
           {src: 'http://localhost:8080/2e0036ab635f5b7dbcef2ca82b1cdca5.jpg'}
