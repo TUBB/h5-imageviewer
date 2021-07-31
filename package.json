@@ -1,15 +1,17 @@
 {
   "name": "h5-imageviewer",
-  "version": "0.7.2",
+  "version": "0.7.4",
   "description": "Image viewer for mobile browser, supported React/Vue/AngularJS.",
-  "main": "dist/bundle.js",
+  "main": "bundle.js",
   "files": [
     "dist",
+    "umd",
     "src/index.d.ts"
   ],
   "types": "./src/index.d.ts",
   "scripts": {
-    "build": "webpack --config webpack.pro.js",
+    "build": "webpack --config webpack.pro.js && webpack --config webpack.pro.script.js",
+    "buildScript": "webpack --config webpack.pro.script.js",
     "preview": "webpack --config webpack.preview.js",
     "watch": "webpack --watch",
     "dev": "webpack-dev-server --config webpack.dev.js --disableHostCheck=true",

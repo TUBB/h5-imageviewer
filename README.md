@@ -28,6 +28,9 @@ You can install it via npm:
 npm i h5-imageviewer
 ```
 
+Or get it from CDN:
+[https://unpkg.com/h5-imageviewer@0.7.4/umd/pobi-imageviewer.js](https://unpkg.com/h5-imageviewer@0.7.4/umd/pobi-imageviewer.js)
+
 # Usage
 Show single image viewer
 ```js

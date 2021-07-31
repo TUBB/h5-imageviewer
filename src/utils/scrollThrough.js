@@ -7,7 +7,7 @@ function getScrollLeft () {
 const toggleForbidScrollThrough = (function toggleForbidScrollThrough () {
   let scrollTop
   let scrollLeft
-  const bodyPosition = document.body.style.position || 'static'
+  const bodyPosition = document.body ? (document.body.style.position || 'static') : 'static'
   return function toggleForbidScrollThroughInner (isForbide) {
     if (isForbide) {
       scrollTop = getScrollTop()

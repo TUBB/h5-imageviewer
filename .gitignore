@@ -1,5 +1,6 @@
 node_modules
 dist
+umd
 *.log
 *.tgz
 .env
@@ -11,3 +12,5 @@ webpack.dev.app.js
 src/apptest/
 coverage
 preview
+public/script-test.html
+public/h5-imageviewer-v0.7.2.js
