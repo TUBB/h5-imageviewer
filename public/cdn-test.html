@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">  
   <meta name="format-detection" content="telephone=no">
   <title>H5 mobile image viewer</title>
-  <script src="https://unpkg.com/h5-imageviewer@0.7.5/umd/h5-imageviewer.js"></script>
+  <script src="https://unpkg.com/h5-imageviewer@0.7.7/umd/h5-imageviewer.js"></script>
   <script src="./vconsole.min.js"></script>
   <script>
     // init vConsole
     var vConsole = new VConsole();
     function showImage() {
       H5ImageViewer.showViewer(
-        {src: 'http://localhost:8080/737a71084999bb9ee329f7afead08564.jpg'},
+        {src: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp4.itc.cn%2Fimages03%2F20200524%2Fd9956119bbf14507ad0da4b2eb5ebaf2.jpeg&refer=http%3A%2F%2Fp4.itc.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1630825813&t=9ab51af91811885dfbc0bbd62a350b4a'},
         {
           onPageChanged: pageIndex => {
             console.log('onPageChanged', pageIndex)
@@ -23,8 +23,8 @@
     function showImageList() {
       H5ImageViewer.showImgListViewer(
         [
-          {src: 'http://localhost:8080/737a71084999bb9ee329f7afead08564.jpg'},
-          {src: 'http://localhost:8080/2e0036ab635f5b7dbcef2ca82b1cdca5.jpg'}
+          {src: 'https://ss1.baidu.com/-4o3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/78310a55b319ebc4cbd4c3e68226cffc1e171624.jpg'},
+          {src: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.yxbao.com%2Fpic%2F201304%2F27%2F1367051246_775420415_2c.jpg&refer=http%3A%2F%2Fimg.yxbao.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1630825813&t=6071ac7ff2a42786d351d2c3cb3fa9f5'}
         ],
         {
           onPageChanged: pageIndex => {
