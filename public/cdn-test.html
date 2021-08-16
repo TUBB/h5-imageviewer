@@ -14,8 +14,8 @@
       H5ImageViewer.showViewer(
         {src: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fp4.itc.cn%2Fimages03%2F20200524%2Fd9956119bbf14507ad0da4b2eb5ebaf2.jpeg&refer=http%3A%2F%2Fp4.itc.cn&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1630825813&t=9ab51af91811885dfbc0bbd62a350b4a'},
         {
-          onPageChanged: pageIndex => {
-            console.log('onPageChanged', pageIndex)
+          onViewerHideListener: () => {
+            console.log('image viewer hide')
           },
         }
       )
