@@ -24,21 +24,22 @@ export default class ExampleNode extends React.Component {
       defaultPageIndex: 1,
       limit: 3
     })
-    setTimeout(() => {
-      // go to the page
-      viewer.setCurrentPage(0)
-    }, 5000)
   }
 
   onShowImgsClickWithDoms () {
     const el = document.createElement('img')
     el.src = img_close
-    el.alt = '地方'
+    el.alt = 'image'
     el.className = 'btnClose'
-    
     const indicator = document.createElement('div')
     indicator.className = 'indicator'
-    const imgs = [img_cover, img_uof, img_timg]
+    const imgs = [
+      {src: 'https://ss1.baidu.com/-4o3dSag_xI4khGko9WTAnF6hhy/zhidao/pic/item/78310a55b319ebc4cbd4c3e68226cffc1e171624.jpg'},
+      {src: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimg.yxbao.com%2Fpic%2F201304%2F27%2F1367051246_775420415_2c.jpg&refer=http%3A%2F%2Fimg.yxbao.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1630825813&t=6071ac7ff2a42786d351d2c3cb3fa9f5'},
+      {src: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fi1.3conline.com%2Fimages%2Fpiclib%2F201112%2F04%2Fbatch%2F1%2F119563%2F1322963981983hakv2357a0_medium.jpg&refer=http%3A%2F%2Fi1.3conline.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1631761900&t=bd96a7e6003f7bc726f36e85a8f7facd'},
+      {src: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fb-ssl.duitang.com%2Fuploads%2Fitem%2F201509%2F16%2F20150916220509_UsBKS.thumb.700_0.png&refer=http%3A%2F%2Fb-ssl.duitang.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1631761900&t=2924cb60f4d52b59b38096969d50ba05'},
+      {src: 'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimage.biaobaiju.com%2Fuploads%2F20180802%2F00%2F1533141344-JZwHgMeNtC.jpg&refer=http%3A%2F%2Fimage.biaobaiju.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1631761900&t=28f89aa6d435b5064787e336d8b96241'}
+    ]
     const dotDoms = []
     imgs.forEach(() => {
       const dot = document.createElement('div')
@@ -51,21 +52,25 @@ export default class ExampleNode extends React.Component {
       e.preventDefault()
       viewer.hideImgListViewer()
     })
-    viewer.showImgListViewer([{ src: img_cover }, { src: img_uof }, { src: img_timg }], {
-      defaultPageIndex: 1,
-      onPageChanged: pageIndex => {
-        dotDoms.forEach((dotDom, index) => {
-          if (pageIndex === index) {
-            dotDom.className = 'dot dotSel'
-          } else {
-            dotDom.className = 'dot'
-          }
-        })
-      },
-      restDoms: [el, indicator],
-      viewerBg: '#333333',
-      clickClosable: false
-    })
+    viewer.showImgListViewer(
+      imgs,
+      {
+        defaultPageIndex: 1,
+        onPageChanged: pageIndex => {
+          dotDoms.forEach((dotDom, index) => {
+            if (pageIndex === index) {
+              dotDom.className = 'dot dotSel'
+            } else {
+              dotDom.className = 'dot'
+            }
+          })
+        },
+        restDoms: [el, indicator],
+        viewerBg: '#333333',
+        clickClosable: false,
+        limit: 3
+      }
+    )
   }
 
   onShowImgsXXXXL () {

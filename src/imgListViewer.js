@@ -140,7 +140,8 @@ const initParams = (imgList, options, screenRotation, cachedCurrPage) => {
     limit = 5,
     zIndex = null,
     viewerBg = null,
-    clickClosable = true
+    clickClosable = true,
+    loop = false
   } = wrapOptions
   if (!/^[0-9]+$/.test(limit) || limit < 3 || limit % 2 !== 1) {
     throw Error('limit must be odd number and greater than 3')
@@ -161,13 +162,15 @@ const initParams = (imgList, options, screenRotation, cachedCurrPage) => {
       imgMaxScale,
       zIndex,
       viewerBg,
-      clickClosable
+      clickClosable,
+      loop
     }
   }
-  if (viewerData.options.defaultPageIndex < 0 ||
-    viewerData.options.defaultPageIndex > imgList.length - 1) {
+  if (viewerData.options.defaultPageIndex < 0) {
     viewerData.options.defaultPageIndex = 0
-  }
+  } else if (viewerData.options.defaultPageIndex > imgList.length - 1) {
+    viewerData.options.defaultPageIndex = imgList.length - 1
+  } else {}
 }
 
 const registerViewerAlloyFinger = () => {
