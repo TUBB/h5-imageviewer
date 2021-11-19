@@ -3,12 +3,13 @@ const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const nodeExternals = require('webpack-node-externals')
 const { rules } = require('./webpack.common')
+const { srcPath, distPath } = require('./paths')
 
 module.exports = {
   mode: 'production',
-  entry: './src/index.js',
+  entry: path.join(srcPath, 'index.js'),
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: distPath,
     filename: 'bundle.js',
     libraryTarget: 'commonjs2'
   },

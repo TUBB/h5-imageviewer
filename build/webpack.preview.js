@@ -3,12 +3,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const { rules } = require('./webpack.common')
+const { srcPath, distPath, publicPath, previewPath } = require('./paths')
 
 module.exports = {
   mode: 'production',
-  entry: './src/example/example.js',
+  entry: path.join(srcPath, 'example/example.js'),
   output: {
-    path: path.resolve(__dirname, 'preview'),
+    path: previewPath,
     // chunk hash, 不同chunk会生成不同的hash
     filename: '[name]_[hash:8].js'
   },
@@ -23,7 +24,7 @@ module.exports = {
       cssProcessor: require('cssnano')
     }),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'src/preview/example.html'),
+      template: path.join(srcPath, 'preview/example.html'),
       filename: 'example.html',
       inject: true,
       minify: {
@@ -35,5 +36,6 @@ module.exports = {
         removeComments: false
       }
     })
-  ]
+  ],
+  devtool: 'source-map'
 }

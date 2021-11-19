@@ -10,12 +10,11 @@
   ],
   "types": "./src/index.d.ts",
   "scripts": {
-    "build": "webpack --config webpack.pro.js && webpack --config webpack.pro.cdn.js",
-    "buildCDN": "webpack --config webpack.pro.cdn.js",
-    "preview": "webpack --config webpack.preview.js",
+    "build": "webpack --config build/webpack.pro.js && webpack --config build/webpack.pro.cdn.js",
+    "buildCDN": "webpack --config build/webpack.pro.cdn.js",
+    "preview": "webpack --config build/webpack.preview.js",
     "watch": "webpack --watch",
-    "dev": "webpack-dev-server --config webpack.dev.js --disableHostCheck=true",
-    "appdev": "webpack-dev-server --config webpack.dev.app.js --disableHostCheck=true",
+    "dev": "webpack-dev-server --config build/webpack.dev.js --disableHostCheck=true",
     "test": "jest --coverage",
     "coverage": "cat ./coverage/lcov.info | coveralls",
     "lint": "standard"

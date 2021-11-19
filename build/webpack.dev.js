@@ -5,14 +5,15 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const OpenBrowserPlugin = require('open-browser-webpack-plugin')
 const CopyPlugin = require('copy-webpack-plugin')
 const { rules } = require('./webpack.common')
+const { srcPath, distPath, publicPath } = require('./paths')
 
 module.exports = {
   mode: 'development',
   entry: {
-    example: './src/example/example.js'
+    example: path.join(srcPath, 'example/example.js')
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: distPath,
     filename: '[name].js'
   },
   module: {
@@ -22,7 +23,7 @@ module.exports = {
     new CleanWebpackPlugin(),
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'src/example/example.html'),
+      template: path.join(srcPath, 'example/example.html'),
       filename: 'example.html',
       inject: true,
       minify: {
@@ -41,14 +42,15 @@ module.exports = {
     ),
     new CopyPlugin([
       {
-        from: path.resolve(__dirname, 'public'),
-        to: path.resolve(__dirname, 'dist')
+        from: publicPath,
+        to: distPath
       }
     ])
   ],
   devServer: {
     port: 8080,
-    contentBase: './dist',
+    contentBase: distPath,
     hot: true
-  }
+  },
+  devtool: 'eval-source-map'
 }

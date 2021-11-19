@@ -2,18 +2,19 @@ const path = require('path')
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin')
 const { CleanWebpackPlugin } = require('clean-webpack-plugin')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
-const CDNInjectPlugin = require('./webpack.cdn.plugin')
+const CDNInjectPlugin = require('./CDNInjectPlugin')
 const { rules } = require('./webpack.common')
-const { name, version } = require('./package.json')
+const { srcPath, publicPath } = require('./paths')
+const { name, version } = require('../package.json')
 const pathDir = 'umd'
 const filename = 'h5-imageviewer.js'
 const cdnUrl = `https://unpkg.com/${name}@${version}/${pathDir}/${filename}`
 
 module.exports = {
   mode: 'production',
-  entry: './src/index.js',
+  entry: path.join(srcPath, 'index.js'),
   output: {
-    path: path.resolve(__dirname, pathDir),
+    path: path.resolve(__dirname, '..', pathDir),
     filename: filename,
     libraryExport: 'default',
     libraryTarget: 'umd',
@@ -30,8 +31,8 @@ module.exports = {
       cssProcessor: require('cssnano')
     }),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'src/example/cdn-test.html'),
-      filename: path.join(__dirname, 'public/cdn-test.html'),
+      template: path.join(srcPath, 'example/cdn-test.html'),
+      filename: path.join(publicPath, 'cdn-test.html'),
       inject: false,
     }),
     new CDNInjectPlugin({ 
