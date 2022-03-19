@@ -30,7 +30,7 @@ npm i h5-imageviewer
 
 Or get it from CDN:
 
-[https://unpkg.com/h5-imageviewer@0.7.7/umd/h5-imageviewer.js](https://unpkg.com/h5-imageviewer@0.7.7/umd/h5-imageviewer.js)
+[https://unpkg.com/h5-imageviewer@0.7.8/umd/h5-imageviewer.js](https://unpkg.com/h5-imageviewer@0.7.8/umd/h5-imageviewer.js)
 
 # Usage
 Show single image viewer
